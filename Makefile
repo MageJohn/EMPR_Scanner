@@ -53,8 +53,6 @@ SRC_DIR := $(ROOT_DIR)/src
 LIB_DIR := $(ROOT_DIR)/lib
 PROGRAMS := $(basename $(notdir $(wildcard $(SRC_DIR)/*.c)))
 OBJ_FILES := $(patsubst %.c,%.o,$(shell find -type f -name *.c -printf "%f "))
-LIBS := $(patsubst %.c,%.o,$(shell find $(LIB_DIR) -mindepth 1 -maxdepth 1 -type f -name *.c -printf "%f "))\
-	$(addsuffix .a,$(shell find $(LIB_DIR) -mindepth 1 -type d -printf "%f "))
 
 
 #VPATH := $(BIN_DIR) $(SRC_DIR) $(LIB_DIR) $(wildcard $(LIB_DIR)/*)
@@ -63,6 +61,10 @@ vpath %.h $(SRC_DIR) $(LIB_DIR) $(shell find $(LIB_DIR)/* -type d -printf "%p ")
 vpath %.o $(BIN_DIR)
 vpath %.a $(BIN_DIR)
 vpath % $(BIN_DIR)
+
+stepper_test_deps := mbed.a ioboard.a leds.o
+systick_deps := ioboard.a motors.o leds.o
+stop_motors_deps := ioboard.a
 
 STATIC_LIBS := 
 
@@ -88,13 +90,13 @@ clean:
 
 .INTERMEDIATE: mp2_demo.elf %.o
 
+.SECONDEXPANSION:
 $(PROGRAMS): %: %.elf
 	$(OBJCOPY) -I elf32-little -O binary $(BIN_DIR)/$@.elf $(BIN_DIR)/$@.bin
 
-$(addsuffix .elf,$(PROGRAMS)): %.elf: %.o $(LIBS)
+$(addsuffix .elf,$(PROGRAMS)): %.elf: %.o $$($$*_deps)
 	$(CC) -o $(BIN_DIR)/$@ $(addprefix $(BIN_DIR)/,$(notdir $^)) $(LDFLAGS)
 
-.SECONDEXPANSION:
 pc := %
 %.a: $$(notdir $$(patsubst $$(pc).c,$$(pc).o,$$(wildcard $(LIB_DIR)/%/*.c)))
 	ar rcs $(BIN_DIR)/$@ $(addprefix $(BIN_DIR)/,$(notdir $^))
