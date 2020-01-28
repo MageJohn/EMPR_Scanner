@@ -62,8 +62,9 @@ vpath %.o $(BIN_DIR)
 vpath %.a $(BIN_DIR)
 vpath % $(BIN_DIR)
 
+platform_deps := platform.a mbed.a ioboard.a leds.a
 stepper_test_deps := mbed.a ioboard.a leds.o
-systick_deps := ioboard.a motors.o leds.o
+motors_test_deps := $(platform_deps)
 stop_motors_deps := ioboard.a
 struct_test_deps := serial.o
 led_mux_test_deps := leds.a mbed.a
