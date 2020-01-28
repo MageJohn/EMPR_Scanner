@@ -1,5 +1,4 @@
-#include "rit.h"
-#include "wait.h"
+#include "mbed.h"
 
 void wait(uint32_t time) {
     wait_ms(time * 1000);

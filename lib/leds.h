@@ -1,5 +1,15 @@
 #include "lpc_types.h"
 
+/*------------------------------
+ * STRUCTS
+ * -----------------------------*/
+
+struct LedSource {
+    uint8_t num;
+    uint32_t id;
+    struct LedSource *next;
+};
+
 
 /*------------------------------
  * CONSTANTS
@@ -41,3 +51,33 @@ void led_clear(void);
 // Parameters:
 //      void
 void led_setup(void);
+
+
+// Register a new source for the led multiplexer
+//
+// Returns:
+//      A pointer to the new LedSource
+//
+// Parameters:
+//      uint32_t id: The id of the new source.
+struct LedSource* led_mux_register_source(uint32_t id);
+
+
+// Set the current source for the led multiplexer
+//
+// Returns:
+//      void
+//
+// Parameters:
+//      uint32_t id: The idea of a source, as set in a registered LedSource
+void led_mux_set_curr(uint32_t id);
+
+
+// Update the leds with the value of the current source
+//
+// Returns:
+//      void
+//
+// Parameters:
+//      void
+void led_mux_tick();

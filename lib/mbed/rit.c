@@ -1,6 +1,8 @@
 #include "lpc17xx_rit.h"
 #include "lpc17xx_clkpwr.h"
 
+#include "mbed.h"
+
 void mbed_rit_init(void) {
     RIT_Init(LPC_RIT);
 }

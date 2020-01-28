@@ -65,6 +65,8 @@ vpath % $(BIN_DIR)
 stepper_test_deps := mbed.a ioboard.a leds.o
 systick_deps := ioboard.a motors.o leds.o
 stop_motors_deps := ioboard.a
+struct_test_deps := serial.o
+led_mux_test_deps := leds.a mbed.a
 
 STATIC_LIBS := 
 

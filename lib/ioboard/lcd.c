@@ -1,10 +1,9 @@
 #include <string.h>
 
-#include "lpc17xx_i2c.h"
-
-#include "utils.h"
-#include "i2c.h"
+#include "ioboard.h"
 #include "lcd.h"
+
+#define LEN(x)  (sizeof(x) / sizeof((x)[0]))
 
 // All functions assume that the IO board's I2C interface has been initialised
 // with the function ioboard_i2c_init()

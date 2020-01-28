@@ -1,6 +1,5 @@
-#include "lpc17xx_i2c.h"
 #include "lpc17xx_pinsel.h"
-#include "ioboard/i2c.h"
+#include "ioboard.h"
 
 // Initialise the i2c bus to which the ioboard peripherals attached
 //

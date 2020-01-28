@@ -4,9 +4,7 @@
 #include "lpc17xx_pinsel.h"
 #include "lpc17xx_dac.h"
 
-#include "mbed/rit.h"
-#include "wait.h"
-#include "mbed/dac.h"
+#include "mbed.h"
 
 #define PI (3.14159265)
 
