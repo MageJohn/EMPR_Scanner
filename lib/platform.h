@@ -1,6 +1,18 @@
 #include "lpc_types.h"
 #include <stdbool.h>
 
+// Debug led sources
+#define HB_LED 1
+#define X_LED 2
+#define Y_LED 3
+#define Z_LED 4
+
+// Axis limits
+#define X_SOFT_LIMIT 980
+#define Y_SOFT_LIMIT 850
+#define Z_SOFT_LIMIT 7000
+
+
 // Call once before calling other functions.
 void platform_init(void);
 
@@ -26,3 +38,10 @@ void platform_calibrate_head(void);
 // Returns:
 //      bool: true if calibrated, false otherwise. 
 bool platform_calibrated(void);
+
+// Set the interval in milliseconds between motor ticks; higher values make the
+// motors move more slowly.
+//
+// Parameters:
+//      uint16_t interval: the interval to use
+void platform_motor_update_interval(uint16_t new_interval);

@@ -2,11 +2,6 @@
 #include "leds.h"
 #include "mbed.h"
 
-#define HB_LED 1
-#define X_LED 2
-#define Y_LED 3
-#define Z_LED 4
-
 void main(void) {
     led_setup();
     platform_init();
@@ -15,5 +10,5 @@ void main(void) {
 
     platform_calibrate_head();
     while (!platform_calibrated());
-    platform_head_set_coords(900, 900, 100);
+    platform_head_set_coords(X_SOFT_LIMIT - 1, Y_SOFT_LIMIT -1, 7000);
 }
