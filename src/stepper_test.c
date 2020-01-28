@@ -1,6 +1,5 @@
-#include "lpc17xx_i2c.h"
 #include "lpc17xx_systick.h"
-#include "ioboard/i2c.h"
+#include "ioboard.h"
 #include "leds.h"
 
 #define XYLATCH 0x3e
