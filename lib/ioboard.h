@@ -134,3 +134,54 @@ void ioboard_lcd_write_bytes(uint8_t *bytes, uint8_t length, uint8_t ddram_addr)
 //      uint8_t ddram_addr: ddram address to start writing from
 void ioboard_lcd_write_ascii(char *string, uint8_t ddram_addr);
 
+
+// Set the desired address to work with on i2c
+//
+// Returns:
+//	void
+//
+// Parameters:
+//	i2c address
+//   
+void i2c_address(int address);
+
+
+// Write data using i2c bus
+//
+// Returns:
+//	SUCCESS if write was performed
+//	FAIL if write failed
+//
+// Parameters:
+//	data - data to write
+//	length - size of data in bytes
+//   
+int i2c_write(int data, int length);
+
+
+// Read data from i2c bus
+//
+// Returns:
+//	SUCCESS if read was performed
+//	FAIL if read failed
+//
+// Parameters:
+//	buffer - buffer to read data into
+//	length - the size of the buffer in bytes
+//  
+int i2c_read(int buffer, int length);
+
+
+// Combined protocol- first write data, after which read will be performed
+//
+// Returns:
+//	SUCCESS if read and write was performed
+//	FAIL if read and write failed
+//
+// Parameters:
+//	write_data - data to write
+//	write_length - size of data in bytes
+//	read_data - buffer to read data into
+//	read_length - the size of the buffer in bytes
+int i2c_combined(int read_data, int write_data, int read_length, int write_length);
+
