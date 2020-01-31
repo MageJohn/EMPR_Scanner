@@ -69,6 +69,8 @@ stop_motors_deps := ioboard.a
 struct_test_deps := serial.o
 led_mux_test_deps := leds.a mbed.a
 raster_scan_B2_deps := $(platform_deps)
+rgb_sensor_test_deps := ioboard.a serial.o
+motor_patterns_deps := $(platform_deps)
 
 STATIC_LIBS := 
 

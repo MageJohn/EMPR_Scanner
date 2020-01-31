@@ -1,6 +1,8 @@
 #include "lpc17xx_pinsel.h"
 #include "ioboard.h"
 
+#define LPC LPC_I2C1
+
 // Initialise the i2c bus to which the ioboard peripherals attached
 //
 // Returns:
@@ -42,7 +44,7 @@ void ioboard_i2c_init(void) {
 //   
 
 void i2c_address(int address) {
-	M_setup.addr7bit = address;
+	M_setup.sl_addr7bit = address;
 }
 
 
@@ -61,7 +63,7 @@ int i2c_write(int data, int length) {
 	M_setup.tx_data = &data;
 	M_setup.tx_length = length;
 	M_setup.rx_length = 0;
-	return I2C_MasterTransferData(LPC, &M_setup, I2C_TRANSFER_POLLING)
+	return I2C_MasterTransferData(LPC, &M_setup, I2C_TRANSFER_POLLING);
 }
 
 
@@ -80,7 +82,7 @@ int i2c_read(int buffer, int length) {
 	M_setup.rx_length = length;
 	M_setup.rx_data = &buffer;
 	M_setup.tx_length = 0;
-	return I2C_MasterTransferData(LPC, &M_setup, I2C_TRANSFER_POLLING)
+	return I2C_MasterTransferData(LPC, &M_setup, I2C_TRANSFER_POLLING);
 }
 
 
@@ -101,6 +103,6 @@ int i2c_combined(int read_data, int write_data, int read_length, int write_lengt
 	M_setup.tx_length = write_length;
 	M_setup.rx_data = &read_data;
 	M_setup.rx_length = read_length;
-	return I2C_MasterTransferData(LPC, &M_setup, I2C_TRANSFER_POLLING)
+	return I2C_MasterTransferData(LPC, &M_setup, I2C_TRANSFER_POLLING);
 }
 

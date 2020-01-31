@@ -52,7 +52,7 @@ int main(void) {
 	M_setup.tx_data = 0;
 	M_setup.rx_length = 1;
 	M_setup.rx_data = &read_one;
-	I2C_MasterTransferData(LPC, &M_setup, I2C_TRANSFER_POLLING)
+	I2C_MasterTransferData(LPC, &M_setup, I2C_TRANSFER_POLLING);
 	
 
 	// Setup I2C SETUP_TYPE for init
