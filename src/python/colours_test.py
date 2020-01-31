@@ -1,9 +1,10 @@
 from struct import unpack
 from serial import Serial
+from blessed import Terminal
 
 
 GAMMA = 2.2
-MAX_VALUE = 1024
+MAX_VALUE = 0xFFFF
 
 
 def set_bg(text, rgb):
@@ -11,25 +12,48 @@ def set_bg(text, rgb):
     return f"\x1b[48;2;{r};{g};{b}m{text}\x1b[0m"
 
 
-def main():
-    ser = Serial("/dev/ttyACM0", 9600)
+def scale(raw):
+    return tuple((int(val/MAX_VALUE * 255) for val in raw[1:]))
+
+
+def compress_gamma(raw):
+    return tuple((int(((val/raw[0]) ** (1/GAMMA)) * 255) for val in raw[1:]))
+
+
+def expand_gamma(raw):
+    return tuple((int(((val/raw[0]) ** GAMMA) * 255) for val in raw[1:]))
+
+def scaled_compress_gamma(raw):
+    return tuple((int(((val/MAX_VALUE) ** (1/GAMMA)) * 255) for val in raw[1:]))
+
+def scaled_expand_gamma(raw):
+    return tuple((int(((val/MAX_VALUE) ** GAMMA) * 355) for val in raw[1:]))
+
+def main(ser, term):
+    ser.read_until(b"start")
     while True:
         raw_bytes = ser.read(8)
 
         raw_colour = unpack("<4H", raw_bytes)
 
-        scaled = tuple((val/MAX_VALUE * 255 for val in raw_colour))
+        masked_colour = tuple((val & MAX_VALUE for val in raw_colour))
+        print(tuple(hex(val) for val in raw_bytes))
+        print(str(raw_colour).ljust(50))
+        print(str(masked_colour).ljust(50))
 
-        gamma_8bit_compressed = tuple(((val/raw_colour[0] ^ (1/2.2)) * 255 for val in raw_colour[1:]))
-        gamma_8bit_expanded = tuple(((val/raw_colour[0] ^ 2.2) * 255 for val in raw_colour[1:]))
-
-        print(
-            set_bg("   ", scaled[1:]),
-            set_bg("   ", gamma_8bit_compressed),
-            set_bg("   ", gamma_8bit_expanded),
-            end="\r"
-        )
+        funcs = (scale, compress_gamma,
+                 expand_gamma, scaled_compress_gamma,
+                 scaled_expand_gamma)
+        for f in funcs:
+            if masked_colour[0] == 0:
+                colour = (0, 0, 0)
+            else:
+                colour = f(masked_colour)
+            print((set_bg(f"{colour}", colour) + f" {f.__name__}").ljust(50))
+        print(term.move_up(len(funcs) + 3) + term.move_x(0), end="")
 
 
 if __name__ == "__main__":
-    main()
+    ser = Serial("/dev/ttyACM0", 9600)
+    term = Terminal()
+    main(ser, term)

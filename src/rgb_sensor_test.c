@@ -1,123 +1,65 @@
-#include "lpc17xx_i2c.h"
-#include "ioboard/i2c.h"
-#include "mbed/rit.h"
-#include "leds.h"
-#include "mbed/wait.h"
 #include <stdio.h>
-#include <lpc17xx_i2c.h>
-#include "lpc17xx_gpio.h"
-#include "lpc17xx_uart.h"
-#include "lpc17xx_pinsel.h"
-#include "lpc_types.h"
+#include "ioboard.h"
+#include "mbed.h"
 #include "serial.h"
-#include <math.h>
- 
-#define RGB_SCANNER 0x29
-#define LPC LPC_I2C1
-#define SENSOR_SIZE 9
-#define SEND_SIZE_INIT 16
-#define SEND_SIZE_RGB 9
-#define BUF_SIZE 256
 
-char buffer[BUF_SIZE];				// Readout values
-uint8_t receive_data[SENSOR_SIZE];	// I2C read values
-uint8_t send_data_init = 0xa0;		// Writes to REGISTER_ENABLE and REGISTER_ATIME
-uint8_t send_data_rgb = 0xb3;		// Reads registers 0x13 -> 0x1B
+#define RGB_SENSOR_ADDR 0x29
 
-// RGB and clear 16-bit values
-uint16_t red;
-uint16_t green;
-uint16_t blue;
-uint16_t clear;
+union ColourData {
+    uint16_t combined[4];
+    uint8_t low_high[8];
+};
 
+uint16_t integration_time(uint8_t integ_cycles);
 
-int main(void) {
+void main(void) {
+    char output[256];
+    int out_len;
+    union ColourData rx_data;
+    I2C_M_SETUP_Type packet = {
+        .sl_addr7bit = RGB_SENSOR_ADDR,
+    };
 
-	// TODO: Initiate RGBC timing register !
-	// TODO: Send enable and Atime seperatly
-	// TODO: GOogle why blue sensor is too high/sensitive
+    ioboard_i2c_init();
+    serial_init();
 
-	serial_init();
+    out_len = snprintf(output, 256, "start");
+    serial_write_b(output, out_len);
 
-	ioboard_i2c_init();
+    // This chip support I2C fast mode, up to 400 kHz
+    I2C_Init(LPC_I2C1, 400000);
 
-	// Setup I2C SETUP_TYPE for init
-	I2C_M_SETUP_Type M_setup;
-	M_setup.tx_length = 1;
-	M_setup.tx_data = &send_data_init;
-	M_setup.sl_addr7bit = RGB_SCANNER;
-	M_setup.rx_length = 0;
+    // Enable chip
+    uint8_t tx_data[] = {0xa0, 0x03, 0x00};
+    packet.tx_data = tx_data;
+    packet.tx_length = 3;
+    I2C_MasterTransferData(LPC_I2C1, &packet, I2C_TRANSFER_POLLING);
 
-	serial_write_b("\033[2J", 4);
-	serial_write_b("\033[H", 4);
+    // Set address to clear high, (with auto-increment)
+    tx_data[0] = 0xb4;
+    packet = (I2C_M_SETUP_Type){
+        .sl_addr7bit = RGB_SENSOR_ADDR,
+        .tx_data = tx_data,
+        .tx_length = 1,
+        .rx_data = rx_data.low_high,
+        .rx_length = 8,
+    };
 
-	sprintf(buffer, "Status: ");
-	serial_write_b(buffer, BUF_SIZE);
+    wait_us(2400);
 
-	delay();
-
-
-	// Write to ENABLE and ATIME registers
-	if (I2C_MasterTransferData(LPC, &M_setup, I2C_TRANSFER_POLLING) == SUCCESS) {
-
-		sprintf(buffer, "Writing succeeded");
-		serial_write_b(buffer, BUF_SIZE);
-
-	} else {
-
-		sprintf(buffer, "Writing failed. Terminating.");
-		serial_write_b(buffer, BUF_SIZE);
-		exit(0);
-
-	}
-
-	delay();
-
-	// Setup I2C for writing then reading data
-	M_setup.tx_length = SEND_SIZE_RGB;
-	M_setup.tx_data = &send_data_rgb;
-	M_setup.rx_data = &receive_data;
-	M_setup.rx_length = SENSOR_SIZE;
-	
-
-	while(1) {
-
-		if (I2C_MasterTransferData(LPC, &M_setup, I2C_TRANSFER_POLLING) == SUCCESS) {
-
-			// Clear screen
-			serial_write_b("\033[2J", 4);
-			serial_write_b("\033[H", 4);
-
-			// TODO: Values not working correctly. Blue too high. Maybe overflow?
-
-			// Combine values into 16-bit integers. First input is the high byte, second-low byte
-			clear = (receive_data[2] << 8) | receive_data[1];
-			red = (receive_data[4] << 8) | receive_data[3];
-			green = (receive_data[6] << 8) | receive_data[5];
-			blue = (receive_data[8] << 8) | receive_data[7];
-			
-
-			// For hex value: 0x%02x
-			//sprintf(buffer, "Values: RL %d RH %d GL %d GH %d BL %d BH %d", receive_data[3], receive_data[4], receive_data[5], receive_data[6], receive_data[7], receive_data[8]);
-			sprintf(buffer, "Values:  Red %d    Green %d    Blue %d\n\rClear value: %d", red, green, blue, clear);
-			serial_write_b(buffer, BUF_SIZE);	
-
-		delay();
-
-		}		
-	}
-
+    while (1) {
+        wait_us(integration_time(0x00) + 2400);
+        I2C_MasterTransferData(LPC_I2C1, &packet, I2C_TRANSFER_POLLING);
+        //out_len = snprintf(output, 256, "\rC %4d R %4d G %4d B %4d", 
+        //        rx_data.combined[0] & 0x7FF,
+        //        rx_data.combined[1] & 0x7FF,
+        //        rx_data.combined[2] & 0x7FF,
+        //        rx_data.combined[3] & 0x7FF);
+        //serial_write_b(output, out_len);
+        serial_write_b((char *)rx_data.low_high, 8);
+    }
 }
 
-// Stalls the program for about 0.050 seconds
-int delay(void) {
-
-	int y = 0;
-	int x;
-
-	for (x = 0; x<500000; x++) {
-		y++;
-	}
-
+uint16_t integration_time(uint8_t atime) {
+    return 2400 * (256 - atime);
 }
-
