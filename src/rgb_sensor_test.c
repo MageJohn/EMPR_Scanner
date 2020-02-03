@@ -26,21 +26,19 @@ void main(void) {
     out_len = snprintf(output, 256, "start");
     serial_write_b(output, out_len);
 
-    // This chip support I2C fast mode, up to 400 kHz
-    I2C_Init(LPC_I2C1, 400000);
-
     // Enable chip
-    uint8_t tx_data[] = {0xa0, 0x03, 0x00};
+    uint8_t tx_data[] = {0xa0, 0x03};
     packet.tx_data = tx_data;
-    packet.tx_length = 3;
+    packet.tx_length = 2;
     I2C_MasterTransferData(LPC_I2C1, &packet, I2C_TRANSFER_POLLING);
 
     // Set address to clear high, (with auto-increment)
     tx_data[0] = 0xb4;
+    packet.tx_length = 1;
+    I2C_MasterTransferData(LPC_I2C1, &packet, I2C_TRANSFER_POLLING);
+
     packet = (I2C_M_SETUP_Type){
         .sl_addr7bit = RGB_SENSOR_ADDR,
-        .tx_data = tx_data,
-        .tx_length = 1,
         .rx_data = rx_data.low_high,
         .rx_length = 8,
     };
@@ -48,7 +46,7 @@ void main(void) {
     wait_us(2400);
 
     while (1) {
-        wait_us(integration_time(0x00) + 2400);
+        wait_us(integration_time(0xff) + 2400);
         I2C_MasterTransferData(LPC_I2C1, &packet, I2C_TRANSFER_POLLING);
         //out_len = snprintf(output, 256, "\rC %4d R %4d G %4d B %4d", 
         //        rx_data.combined[0] & 0x7FF,
@@ -56,7 +54,7 @@ void main(void) {
         //        rx_data.combined[2] & 0x7FF,
         //        rx_data.combined[3] & 0x7FF);
         //serial_write_b(output, out_len);
-        serial_write_b((char *)rx_data.low_high, 8);
+        serial_write_b(rx_data.low_high, 8);
     }
 }
 
