@@ -31,6 +31,7 @@ def scaled_expand_gamma(raw):
 
 def main(ser, term):
     ser.read_until(b"start")
+    print("start")
     while True:
         raw_bytes = ser.read(8)
 
