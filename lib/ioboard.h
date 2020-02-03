@@ -24,6 +24,111 @@
 //      void
 void ioboard_i2c_init(void);
 
+// Set the desired address to work with on i2c
+//
+// Returns:
+//      void
+//
+// Parameters:
+//      i2c address
+void ioboard_i2c_address(uint8_t address);
+
+
+// Write a byte using i2c bus
+//
+// Returns:
+//      SUCCESS if write was performed
+//      FAIL if write failed
+//
+// Parameters:
+//      data - data byte to write
+
+Status ioboard_i2c_write_byte(uint8_t data);
+
+
+// Write data using i2c bus
+//
+// Returns:
+//      SUCCESS if write was performed
+//      FAIL if write failed
+//
+// Parameters:
+//      data - A pointer to the data to write
+//      length - The number of bytes to write
+
+Status ioboard_i2c_write(uint8_t *data, uint32_t length);
+
+
+// Read a byte from i2c bus
+//
+// Returns:
+//      SUCCESS if read was performed
+//      FAIL if read failed
+//
+// Parameters:
+//      variable - variable to read data into
+
+Status ioboard_i2c_read_byte(uint8_t *variable);
+
+
+// Read data from i2c bus
+//
+// Returns:
+//      SUCCESS if read was performed
+//      FAIL if read failed
+//
+// Parameters:
+//      buffer - a pointer to a buffer to read data into
+//      length - the size of the buffer in bytes
+
+Status ioboard_i2c_read(uint8_t *buffer, uint32_t length);
+
+
+// Read byte from a register over i2c
+//
+// Write a register address and then read a byte.
+//
+// Returns:
+//      SUCCESS if read was performed
+//      FAIL if read failed
+//
+// Parameters:
+//      reg - the register to read from
+//      variable - a pointer to store the byte to
+
+Status ioboard_i2c_read_register_byte(uint8_t reg, uint8_t *variable);
+
+
+// Read data from a register over i2c
+//
+// Write a register address and then read.
+//
+// Returns:
+//      SUCCESS if read was performed
+//      FAIL if read failed
+//
+// Parameters:
+//      reg - the register to read from
+//      buffer - a pointer to store the data to
+//      length - the size of the buffer in bytes
+
+Status ioboard_i2c_read_register(uint8_t reg, uint8_t *buffer, uint32_t length);
+
+
+// Combined protocol- first write data, after which read will be performed
+//
+// Returns:
+//      SUCCESS if read and write was performed
+//      FAIL if read and write failed
+//
+// Parameters:
+//      write_data - data to write
+//      write_length - size of data in bytes
+//      read_data - buffer to read data into
+//      read_length - the size of the buffer in bytes
+
+Status ioboard_i2c_combined(uint8_t *read_data, uint8_t *write_data,
+                         uint32_t read_length, uint32_t write_length);
 
 // Poll the keyboard for pressed keys
 //

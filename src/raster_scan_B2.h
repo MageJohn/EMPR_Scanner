@@ -1,0 +1,1 @@
+void raster_scan();
