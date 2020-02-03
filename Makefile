@@ -86,6 +86,9 @@ $(addsuffix .install,$(PROGRAMS)): %.install: %
 	cp $(BIN_DIR)/$*.bin /media/$(USER)/MBED &
 	sync
 
+bin:
+	mkdir bin
+
 -include $(wildcard $(BIN_DIR)/*.d)
 
 # make clean - Clean out the source tree ready to re-build the project
@@ -95,7 +98,7 @@ clean:
 .INTERMEDIATE: mp2_demo.elf %.o
 
 .SECONDEXPANSION:
-$(PROGRAMS): %: %.elf
+$(PROGRAMS): %: bin %.elf
 	$(OBJCOPY) -I elf32-little -O binary $(BIN_DIR)/$@.elf $(BIN_DIR)/$@.bin
 
 $(addsuffix .elf,$(PROGRAMS)): %.elf: %.o $$($$*_deps)
