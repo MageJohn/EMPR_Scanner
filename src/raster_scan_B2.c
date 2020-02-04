@@ -11,6 +11,7 @@
 
 struct LedSource *led;
 
+
 int main(void) {
     platform_init();
     led_setup();
@@ -33,6 +34,7 @@ bool one_dimensional_scan(uint16_t x, uint16_t y, uint16_t z, uint16_t stop_coor
         x += step;
         if(x >= stop_coord) {
             end = true;
+
         }
         else if (x <= stop_coord) {
             end = true;

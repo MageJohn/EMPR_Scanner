@@ -1,1 +1,4 @@
 bin/*
+include/
+.clang_complete
+__pycache__

@@ -81,9 +81,9 @@ void platform_motor_update_interval(uint16_t new_interval) {
  * ---------------------------*/
 
 void motors_init(void) {
-    struct LedSource *x_led = led_mux_register_source(2);
-    struct LedSource *y_led = led_mux_register_source(3);
-    struct LedSource *z_led = led_mux_register_source(4);
+    struct LedSource *x_led = led_mux_register_source(X_LED);
+    struct LedSource *y_led = led_mux_register_source(Y_LED);
+    struct LedSource *z_led = led_mux_register_source(Z_LED);
 
     x_state.led = &x_led->num;
     y_state.led = &y_led->num;

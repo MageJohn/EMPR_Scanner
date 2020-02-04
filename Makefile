@@ -68,8 +68,8 @@ motors_test_deps := $(platform_deps)
 stop_motors_deps := ioboard.a
 struct_test_deps := serial.o
 led_mux_test_deps := leds.a mbed.a
+rgb_sensor_test_deps := ioboard.a mbed.a serial.o
 raster_scan_B2_deps := $(platform_deps)
-rgb_sensor_test_deps := ioboard.a serial.o
 motor_patterns_deps := $(platform_deps)
 
 STATIC_LIBS := 
@@ -88,6 +88,9 @@ $(addsuffix .install,$(PROGRAMS)): %.install: %
 	cp $(BIN_DIR)/$*.bin /media/$(USER)/MBED &
 	sync
 
+bin:
+	mkdir bin
+
 -include $(wildcard $(BIN_DIR)/*.d)
 
 # make clean - Clean out the source tree ready to re-build the project
@@ -97,7 +100,7 @@ clean:
 .INTERMEDIATE: mp2_demo.elf %.o
 
 .SECONDEXPANSION:
-$(PROGRAMS): %: %.elf
+$(PROGRAMS): %: bin %.elf
 	$(OBJCOPY) -I elf32-little -O binary $(BIN_DIR)/$@.elf $(BIN_DIR)/$@.bin
 
 $(addsuffix .elf,$(PROGRAMS)): %.elf: %.o $$($$*_deps)
