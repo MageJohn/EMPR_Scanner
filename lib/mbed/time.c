@@ -4,12 +4,16 @@
 void timer_init(void) {
     TIM_TIMERCFG_Type timercfg = {
         .PrescaleOption = TIM_PRESCALE_USVAL,
-        .PrescaleValue = 1000
+        .PrescaleValue = 1
     };
     TIM_Init(LPC_TIM0, TIM_TIMER_MODE, &timercfg);
     TIM_Cmd(LPC_TIM0, ENABLE);
 }
 
-uint32_t millis(void) {
+uint32_t micros(void) {
     return LPC_TIM0->TC;
+}
+
+uint32_t millis(void) {
+    return micros() / 1000;
 }
