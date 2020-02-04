@@ -6,14 +6,14 @@
 #include "motors.h"
 #include "platform.h"
 
-struct LedSource* heartbeat;
+static struct LedSource* heartbeat;
 static uint32_t hb_start = 0;
 
 void platform_init(void) {
     ioboard_i2c_init();
     motors_init();
 
-    heartbeat = led_mux_register_source(1);
+    heartbeat = led_mux_register_source(HB_LED);
 
     timer_init();
 

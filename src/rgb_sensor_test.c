@@ -24,7 +24,7 @@ void main(void) {
     serial_init();
 
     out_len = snprintf(output, 256, "start");
-    serial_write_b(output, out_len);
+    serial_write_b(output, (uint32_t)out_len);
 
     // Enable chip
     uint8_t tx_data[] = {0xa0, 0x03};
@@ -48,13 +48,7 @@ void main(void) {
     while (1) {
         wait_us(integration_time(0xff) + 2400);
         I2C_MasterTransferData(LPC_I2C1, &packet, I2C_TRANSFER_POLLING);
-        //out_len = snprintf(output, 256, "\rC %4d R %4d G %4d B %4d", 
-        //        rx_data.combined[0] & 0x7FF,
-        //        rx_data.combined[1] & 0x7FF,
-        //        rx_data.combined[2] & 0x7FF,
-        //        rx_data.combined[3] & 0x7FF);
-        //serial_write_b(output, out_len);
-        serial_write_b(rx_data.low_high, 8);
+        serial_write_b((char *)rx_data.low_high, 8);
     }
 }
 

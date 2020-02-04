@@ -1,16 +1,18 @@
 #include "lpc17xx_uart.h"
 #include "lpc17xx_pinsel.h"
-#include "lpc_types.h"
 
 #include "serial.h"
 
-int serial_read_nb(char *buf,int length) {
+uint32_t serial_read_nb(char *buf, uint32_t length) {
     return(UART_Receive((LPC_UART_TypeDef *)LPC_UART0, (uint8_t *)buf, length, NONE_BLOCKING));
 }
 
+uint32_t serial_read_b(char *buf, uint32_t length) {
+  return(UART_Receive((LPC_UART_TypeDef *)LPC_UART0, (uint8_t *)buf, length, BLOCKING));
+}
 
-int serial_write_b(char *buf,int length) {
-    return(UART_Send((LPC_UART_TypeDef *)LPC_UART0,(uint8_t *)buf,length, BLOCKING));
+uint32_t serial_write_b(char *buf, uint32_t length) {
+    return(UART_Send((LPC_UART_TypeDef *)LPC_UART0, (uint8_t *)buf, length, BLOCKING));
 }
 
 
@@ -55,10 +57,9 @@ void serial_init(void) {
     */
 
     // Initialize UART0 peripheral with given to corresponding parameter
-    UART_Init((LPC_UART_TypeDef *)LPC_UART0, &UARTConfigStruct);  
+    UART_Init((LPC_UART_TypeDef *)LPC_UART0, &UARTConfigStruct);
     // Initialize FIFO for UART0 peripheral
-    UART_FIFOConfig((LPC_UART_TypeDef *)LPC_UART0, &UARTFIFOConfigStruct);  
+    UART_FIFOConfig((LPC_UART_TypeDef *)LPC_UART0, &UARTFIFOConfigStruct);
     // Enable UART Transmit
-    UART_TxCmd((LPC_UART_TypeDef *)LPC_UART0, ENABLE);          
-    
+    UART_TxCmd((LPC_UART_TypeDef *)LPC_UART0, ENABLE);
 }
