@@ -1,2 +1,3 @@
 bin/*
+.clang_complete
 __pycache__
