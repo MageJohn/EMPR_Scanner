@@ -16,9 +16,11 @@ int main(void) {
     platform_init();
     led_setup();
     led = led_mux_register_source(20);
-    led_mux_set_curr(20);
+    //led_mux_set_curr(25);
     platform_calibrate_head();
-    while(!platform_calibrated());
+    //while(!platform_calibrated());
+    led_mux_set_curr(20);
+    led->num = 8;
     raster_scan(X_START, Y_START, Z_HEIGHT, 100, 20);
     return(1);
 
@@ -28,19 +30,21 @@ int main(void) {
 //dimension chooses where to scan. 1 = x, 2 = y
 bool one_dimensional_scan(uint16_t x, uint16_t y, uint16_t z, uint16_t stop_coord, uint8_t step) {
     platform_head_set_coords(x, y, z);
-    while(!platform_head_at_coords());
+    //while(!platform_head_at_coords());
     bool end = false;
     while(!end) {
         x += step;
         if(x >= stop_coord) {
             end = true;
+            break;
 
         }
         else if (x <= stop_coord) {
             end = true;
+            break;
         }
         platform_head_set_coords(x, y, z);
-        while(!platform_head_at_coords());
+        //while(!platform_head_at_coords());
         wait_ms(500);
         //do sensor stuff here
     }
@@ -56,22 +60,24 @@ void raster_scan(uint16_t x, uint16_t y, uint16_t z, uint16_t grid_size_x, uint1
     uint16_t stop_x = X_SOFT_LIMIT;
     uint16_t x_step = (X_SOFT_LIMIT - x)/grid_size_x;
     uint16_t y_step = (Y_SOFT_LIMIT - y)/grid_size_y;
+    uint16_t current_y = y;
+    uint16_t current_x = x;
+    uint16_t current_z = z;
     while(true) {
-        if (y >= Y_SOFT_LIMIT) {
+        if (current_y >= Y_SOFT_LIMIT) {
             platform_head_set_coords(0, 0, 0);
             break;
-        } else if(x == stop_x) {
-            one_dimensional_scan(stop_x, y, z, start_x, x_step);
-            x = start_x;
+        } else if(current_x >= stop_x) {
+            one_dimensional_scan(stop_x, current_y, current_z, start_x, x_step);
+            current_x = start_x;
             x_step *= -1;
         }
-        else {
-            one_dimensional_scan(start_x, y, z, stop_x, x_step);
-            x = stop_x;
+        else  if(current_x <= start_x) {
+            one_dimensional_scan(start_x, current_y, current_z, stop_x, x_step);
+            current_x = stop_x;
             x_step *= -1;
         }
-        y += y_step;
-        led->num = y/10;
+        current_y += y_step;
         //platform_head_set_coords(x,y,z);
         //while(!platform_head_at_coords());
     }
