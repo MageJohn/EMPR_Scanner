@@ -16,38 +16,26 @@ void main(void) {
     char output[256];
     int out_len;
     union ColourData rx_data;
-    I2C_M_SETUP_Type packet = {
-        .sl_addr7bit = RGB_SENSOR_ADDR,
-    };
 
     ioboard_i2c_init();
+    ioboard_i2c_address(RGB_SENSOR_ADDR);
+
     serial_init();
 
     out_len = snprintf(output, 256, "start");
     serial_write_b(output, (uint32_t)out_len);
 
     // Enable chip
-    uint8_t tx_data[] = {0xa0, 0x03};
-    packet.tx_data = tx_data;
-    packet.tx_length = 2;
-    I2C_MasterTransferData(LPC_I2C1, &packet, I2C_TRANSFER_POLLING);
+    ioboard_i2c_write((uint8_t[]){0xa0, 0x03}, 2);
 
     // Set address to clear high, (with auto-increment)
-    tx_data[0] = 0xb4;
-    packet.tx_length = 1;
-    I2C_MasterTransferData(LPC_I2C1, &packet, I2C_TRANSFER_POLLING);
-
-    packet = (I2C_M_SETUP_Type){
-        .sl_addr7bit = RGB_SENSOR_ADDR,
-        .rx_data = rx_data.low_high,
-        .rx_length = 8,
-    };
+    ioboard_i2c_write_byte(0xb4);
 
     wait_us(2400);
 
     while (1) {
         wait_us(integration_time(0xff) + 2400);
-        I2C_MasterTransferData(LPC_I2C1, &packet, I2C_TRANSFER_POLLING);
+        ioboard_i2c_read(rx_data.low_high, 8);
         serial_write_b((char *)rx_data.low_high, 8);
     }
 }
