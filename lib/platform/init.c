@@ -13,7 +13,6 @@ static uint32_t hb_start = 0;
 void platform_init(void) {
     ioboard_i2c_init();
     motors_init();
-    sensor_init();
 
     heartbeat = led_mux_register_source(HB_LED);
 
@@ -33,5 +32,4 @@ void SysTick_Handler(void) {
 
     led_mux_tick();
     motors_tick();
-    sensor_tick();
 }

@@ -18,10 +18,10 @@ int main(void) {
     led = led_mux_register_source(20);
     //led_mux_set_curr(25);
     platform_calibrate_head();
-    //while(!platform_calibrated());
+    while(!platform_calibrated());
     led_mux_set_curr(20);
     led->num = 8;
-    raster_scan(X_START, Y_START, Z_HEIGHT, 100, 20);
+    raster_scan(X_START, Y_START, Z_HEIGHT, 100, 10);
     return(1);
 
 }
@@ -30,7 +30,7 @@ int main(void) {
 //dimension chooses where to scan. 1 = x, 2 = y
 bool one_dimensional_scan(uint16_t x, uint16_t y, uint16_t z, uint16_t stop_coord, uint8_t step) {
     platform_head_set_coords(x, y, z);
-    //while(!platform_head_at_coords());
+    while(!platform_head_at_coords());
     bool end = false;
     while(!end) {
         x += step;
@@ -44,7 +44,7 @@ bool one_dimensional_scan(uint16_t x, uint16_t y, uint16_t z, uint16_t stop_coor
             break;
         }
         platform_head_set_coords(x, y, z);
-        //while(!platform_head_at_coords());
+        while(!platform_head_at_coords());
         wait_ms(500);
         //do sensor stuff here
     }
@@ -66,6 +66,7 @@ void raster_scan(uint16_t x, uint16_t y, uint16_t z, uint16_t grid_size_x, uint1
     while(true) {
         if (current_y >= Y_SOFT_LIMIT) {
             platform_head_set_coords(0, 0, 0);
+            while(!platform_head_at_coords());
             break;
         } else if(current_x >= stop_x) {
             one_dimensional_scan(stop_x, current_y, current_z, start_x, x_step);
