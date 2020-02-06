@@ -6,6 +6,7 @@
 #define X_LED 2
 #define Y_LED 3
 #define Z_LED 4
+#define RGB_LED 5
 
 // Axis limits
 #define X_SOFT_LIMIT 980
@@ -18,6 +19,12 @@ enum SensorGain {
     GAIN4x,
     GAIN16x,
     GAIN60x
+};
+
+// A union which helps convert between a 16 bit int and two 8 bit bytes
+union ColourData {
+    uint16_t combined[4];
+    uint8_t low_high[8];
 };
 
 

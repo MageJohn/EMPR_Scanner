@@ -4,6 +4,7 @@
 
 #include "platform.h"
 #include "sensor.h"
+#include "leds.h"
 
 // File private defines
 #define RGB_SENSOR_ADDR (0x29)
@@ -17,12 +18,6 @@
 #define ENABLE_AEN (0x2)
 #define ENABLE_PON (0x1)
 
-// A union which helps convert between a 16 bit int and two 8 bit bytes
-	union ColourData {
-    uint16_t combined[4];
-    uint8_t low_high[8];
-};
-
 // File private function declarations
 static uint16_t integration_time(void);
 
@@ -33,6 +28,7 @@ static uint8_t atime = 0xFF;
 static enum SensorGain again = GAIN1x;
 static uint32_t time;
 static bool enable;
+static struct LedSource *led;
 
 
 /*-------------------
@@ -40,7 +36,7 @@ static bool enable;
  * ------------------*/
 
 void platform_sensor_get_data(uint16_t *buffer) {
-    memcpy((void *) buffer, (void *)data.combined, 8);
+    memcpy((void *) buffer, (void *)data.combined, 4);
 }
 
 void platform_sensor_set_gain(enum SensorGain gain) {
@@ -78,12 +74,15 @@ void sensor_init(void){
     // Set address to clear high, (with auto-increment)
     ioboard_i2c_write_byte(CMD | REG_CDATA);
 
+    led = led_mux_register_source(RGB_LED);
+
     // Ensure power on process is complete before continuing.
     wait_us(2400);
 }
 
 void sensor_tick(void) {
     if (enable && micros() - time > integration_time()){
+        led->num ^= 1;
         ioboard_i2c_address(RGB_SENSOR_ADDR);
         ioboard_i2c_read(data.low_high, 8);
     }
