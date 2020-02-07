@@ -147,20 +147,20 @@ void update_motor(struct MotorState *state) {
 
     if (state->hard_limit && direction < 0) {
         if (state->calibrate) {
-            state->coord = 0;
             state->calibrate = false;
         }
+        state->coord = 0;
         state->step = 4;
-        return;
     } else if (state->coord >= state->soft_limit && direction > 0) {
         state->step = 4;
-        return;
     } else if (direction) {
-        state->coord += direction;
+        if (!state->calibrate) {
+            state->coord += direction;
+        }
         state->step = ((uint8_t)(state->step + direction)) % 4;
     } else {
         state->step = 4;
     }
 
-    *state->led = state->step;
+    *state->led = state->step != 4;
 }
