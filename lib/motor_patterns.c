@@ -6,7 +6,8 @@
 #define PI 3.14159265	
 
 
-// THE FUNCTIONS ASSUME THAT PLATFORM HAS BEEN INITIALIZED AND CALIBRATED!
+// THE FUNCTIONS ASSUME THAT PLATFORM HAS BEEN INITIALIZED AND CALIBRATED
+// BY USING: platform_init(); --> platform_calibrate_head(); --> while(!platform_calibrated()); !
 
 // The stepper motors draw a square following the borders of platform
 //
