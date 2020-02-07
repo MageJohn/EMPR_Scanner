@@ -75,7 +75,7 @@ lib_sensor_test_deps := $(platform_deps) serial.o
 lcd_test_deps := $(platform_deps) serial.o
 UI_test_deps := $(platform_deps) serial.o ioboard.a
 manual_platform_move_deps := $(platform_deps) serial.o ioboard.a
-manual_move_UI_deps := ioboard.a serial.o mbed.a platform.a
+manual_move_UI_deps := $(platform_deps) serial.o
 
 STATIC_LIBS := 
 
