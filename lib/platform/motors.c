@@ -1,6 +1,5 @@
 #include "mbed.h"
 #include "platform.h"
-#include "ioboard.h"
 #include "leds.h"
 
 #include "motors.h"
@@ -116,14 +115,23 @@ void move_motors(void) {
     };
     uint8_t xy_data = steps[x_state.step] | (steps[y_state.step] << 4);
     uint8_t z_data = steps[(3 - z_state.step) % 5];
+    static uint8_t old_xy;
+    static uint8_t old_z;
 
-    packet.sl_addr7bit = XYLATCH;
-    packet.tx_data = &xy_data;
-    I2C_MasterTransferData(LPC_I2C1, &packet, I2C_TRANSFER_POLLING);
+    if (xy_data != old_xy) {
+        packet.sl_addr7bit = XYLATCH;
+        packet.tx_data = &xy_data;
+        I2C_MasterTransferData(LPC_I2C1, &packet, I2C_TRANSFER_POLLING);
+    }
 
-    packet.sl_addr7bit = ZPENLATCH;
-    packet.tx_data = &z_data;
-    I2C_MasterTransferData(LPC_I2C1, &packet, I2C_TRANSFER_POLLING);
+    if (z_data != old_z) {
+        packet.sl_addr7bit = ZPENLATCH;
+        packet.tx_data = &z_data;
+        I2C_MasterTransferData(LPC_I2C1, &packet, I2C_TRANSFER_POLLING);
+    }
+
+    old_xy = xy_data;
+    old_z = z_data;
 }
 
 void update_limit_switches(void) {

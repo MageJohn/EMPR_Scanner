@@ -1,12 +1,15 @@
 #include <string.h>
 
-#include "ioboard.h"
-#include "lcd.h"
+#include "platform.h"
+#include "platform_i2c.h"
+#include "platform_lcd.h"
 
 #define LEN(x)  (sizeof(x) / sizeof((x)[0]))
+#define LCD_ADDR 0x3b
+#define DDRAM_SIZE 80
 
 // All functions assume that the IO board's I2C interface has been initialised
-// with the function ioboard_i2c_init()
+// with the function platform_i2c_init()
 
 
 // Initialise the LCD display, ready for writing to
@@ -16,7 +19,7 @@
 //
 // Parameters:
 //      void
-void ioboard_lcd_init(void) {
+void platform_lcd_init(void) {
     uint8_t init_data[] = {
         Control_byte(0, 0),
         Function_set(1, 1, 0, 0), // set basic instruction set
@@ -38,7 +41,7 @@ void ioboard_lcd_init(void) {
         .tx_length = LEN(init_data),
     };
 
-    I2C_MasterTransferData(LPC_I2C1, &lcd_write, I2C_TRANSFER_POLLING);
+    platform_i2c_transfer_blocking(&lcd_write);
 }
 
 
@@ -52,7 +55,7 @@ void ioboard_lcd_init(void) {
 //
 // Parameters:
 //      void
-void ioboard_lcd_clear_display(void) {
+void platform_lcd_clear_display(void) {
 
     I2C_M_SETUP_Type clear_packet = {
         .sl_addr7bit = LCD_ADDR,
@@ -71,17 +74,17 @@ void ioboard_lcd_clear_display(void) {
 
     clear_packet.tx_data = instructions;
     clear_packet.tx_length = LEN(instructions);
-    I2C_MasterTransferData(LPC_I2C1, &clear_packet, I2C_TRANSFER_POLLING);
+    platform_i2c_transfer_blocking(&clear_packet);
 
     clear_packet.tx_data = data;
     clear_packet.tx_length = LEN(data);
-    I2C_MasterTransferData(LPC_I2C1, &clear_packet, I2C_TRANSFER_POLLING);
+    platform_i2c_transfer_blocking(&clear_packet);
 
     instructions[1] = Display_ctl(1, 0, 0);
     instructions[2] = Return_home;
     clear_packet.tx_data = instructions;
     clear_packet.tx_length = LEN(instructions);
-    I2C_MasterTransferData(LPC_I2C1, &clear_packet, I2C_TRANSFER_POLLING);
+    platform_i2c_transfer_blocking(&clear_packet);
 }
 
 
@@ -93,7 +96,7 @@ void ioboard_lcd_clear_display(void) {
 // Parameters:
 //      uint8_t *data: Pointer to the data to transmit
 //      uint32_t length: Length of the data to transmit
-void ioboard_lcd_send_bytes(uint8_t *data, uint32_t length) {
+void platform_lcd_send_bytes(uint8_t *data, uint32_t length) {
     I2C_M_SETUP_Type packet = {
         .sl_addr7bit = LCD_ADDR,
         .rx_data = NULL,
@@ -102,7 +105,7 @@ void ioboard_lcd_send_bytes(uint8_t *data, uint32_t length) {
     packet.tx_data = data;
     packet.tx_length = length;
 
-    I2C_MasterTransferData(LPC_I2C1, &packet, I2C_TRANSFER_POLLING);
+    platform_i2c_transfer_blocking(&packet);
 }
 
 
@@ -115,7 +118,7 @@ void ioboard_lcd_send_bytes(uint8_t *data, uint32_t length) {
 //      uint8_t *bytes: Pointer to the byte array to write
 //      uint8_t length: Length of the byte array to write
 //      uint8_t ddram_addr: DDRAM address to write the bytes to
-void ioboard_lcd_write_bytes(uint8_t *bytes, uint8_t length, uint8_t ddram_addr) {
+void platform_lcd_write_bytes(uint8_t *bytes, uint8_t length, uint8_t ddram_addr) {
     I2C_M_SETUP_Type packet = {
         .sl_addr7bit = LCD_ADDR,
         .rx_data = NULL
@@ -135,11 +138,11 @@ void ioboard_lcd_write_bytes(uint8_t *bytes, uint8_t length, uint8_t ddram_addr)
 
     packet.tx_data = instructions;
     packet.tx_length = LEN(instructions);
-    I2C_MasterTransferData(LPC_I2C1, &packet, I2C_TRANSFER_POLLING);
+    platform_i2c_transfer_blocking(&packet);
 
     packet.tx_data = data;
     packet.tx_length = DDRAM_SIZE+1;
-    I2C_MasterTransferData(LPC_I2C1, &packet, I2C_TRANSFER_POLLING);
+    platform_i2c_transfer_blocking(&packet);
 }
 
 
@@ -159,7 +162,7 @@ void ioboard_lcd_write_bytes(uint8_t *bytes, uint8_t length, uint8_t ddram_addr)
 // Parameters:
 //      char *string: pointer to the null terminated string to write
 //      uint8_t ddram_addr: ddram address to start writing from
-void ioboard_lcd_write_ascii(char *string, uint8_t ddram_addr) {
+void platform_lcd_write_ascii(char *string, uint8_t ddram_addr) {
     // 0xe0 is the upside down ?
     static const uint8_t ascii_to_charset[128] = { [0 ... 127] = 0xe0,
         [' '] = 0x91, ['!'] = 0xa1, ['"'] = 0xa2, ['#'] = 0xa3, ['$'] = 0x82,
@@ -199,9 +202,9 @@ void ioboard_lcd_write_ascii(char *string, uint8_t ddram_addr) {
 
     packet.tx_data = instructions;
     packet.tx_length = LEN(instructions);
-    I2C_MasterTransferData(LPC_I2C1, &packet, I2C_TRANSFER_POLLING);
+    platform_i2c_transfer_blocking(&packet);
 
     packet.tx_data = data;
     packet.tx_length = n+1;
-    I2C_MasterTransferData(LPC_I2C1, &packet, I2C_TRANSFER_POLLING);
+    platform_i2c_transfer_blocking(&packet);
 }
