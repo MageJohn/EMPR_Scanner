@@ -70,8 +70,9 @@ struct_test_deps := serial.o
 led_mux_test_deps := leds.a mbed.a
 raster_scan_B2_deps := $(platform_deps) serial.o
 lib_sensor_test_deps := $(platform_deps) serial.o
-rgb_sensor_test_deps := ioboard.a serial.o mbed.a
+rgb_sensor_test_deps := ioboard.a mbed.a serial.o
 motor_patterns_deps := $(platform_deps) serial.o
+lcd_test_deps := $(platform_deps) serial.o
 
 STATIC_LIBS := 
 

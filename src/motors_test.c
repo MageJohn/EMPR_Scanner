@@ -10,5 +10,5 @@ void main(void) {
 
     platform_calibrate_head();
     while (!platform_calibrated());
-    platform_head_set_coords(0, 100, 5);
+    platform_head_set_coords(0, 100, 100);
 }
