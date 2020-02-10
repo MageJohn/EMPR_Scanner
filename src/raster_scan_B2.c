@@ -4,13 +4,13 @@
 #include "raster_scan_B2.h"
 #include "serial.h"
 
-#define Y_START 250
+#define Y_START 100
 #define X_START 230
-#define Z_START 25
-#define X_RES 2
+#define Z_START 300
+#define X_RES 5
 #define Y_RES 10
 
-static uint64_t rgb_vals[X_RES][Y_RES];
+static uint64_t rgb_vals[X_RES * Y_RES];
 
 void main(void) {
     platform_init();
@@ -21,7 +21,7 @@ void main(void) {
 }
 
 //step is no of motor revolutions.
-void one_dimensional_scan_y(int16_t x, int16_t y, int16_t z, int8_t step, uint16_t *rgb_array) {
+void one_dimensional_scan_y(int16_t x, int16_t y, int16_t z, int8_t step) {
     int16_t no_steps;
     if(y == Y_SOFT_LIMIT) {
         no_steps = abs((Y_SOFT_LIMIT - Y_START)/step);
@@ -36,8 +36,11 @@ void one_dimensional_scan_y(int16_t x, int16_t y, int16_t z, int8_t step, uint16
         y += step;
         platform_head_set_coords(x, y, z);
         while(!platform_head_at_coords());
-        platform_sensor_get_data(rgb_array + i);
-        wait_ms(50);
+        platform_sensor_get_data(&rgb_vals[i]);
+        //time library seems to not work at random??!?!? WTF
+        wait_ms(0.5);
+        //int i;
+        //for (i=0;i<1000000;i++);
     }
 }
 
@@ -48,7 +51,7 @@ void raster_scan(int16_t x, int16_t y, int16_t z, int16_t x_res, int16_t y_res) 
     int i;
     int16_t start_y = y;
     for(i = 0; i < x_res; i++) {
-        one_dimensional_scan_y(x, y, z, step, rgb_vals[i]);
+        one_dimensional_scan_y(x, y, z, step);
         x += next_row;
         step *= -1;
         if(y == start_y) {
@@ -68,7 +71,6 @@ void send_data(void) {
     serial_write_b(&buffer1, 2);
     serial_write_b(&buffer2, 2);
     int i;
-    buffer = rgb_vals;
-    serial_write_b(buffer, (8*Y_RES)*X_RES);
+    serial_write_b(rgb_vals, (8*Y_RES)*X_RES);
 }
 

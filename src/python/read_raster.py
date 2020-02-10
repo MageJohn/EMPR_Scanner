@@ -11,7 +11,7 @@ def main(ser):
     data_x_y = ser.read(4)
     raw_x_y = unpack("<2H", data_x_y)
     
-    bytes_to_read = raw_x_y[0] * (8 * raw_x_y[1])
+    bytes_to_read = raw_x_y[0] * (8  * raw_x_y[1])
     unpack_bytes = int(bytes_to_read/8)
     
     raw_unpack_bytes = "<"+str(unpack_bytes)+"Q"

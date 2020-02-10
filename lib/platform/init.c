@@ -34,4 +34,5 @@ void SysTick_Handler(void) {
 
     led_mux_tick();
     motors_tick();
+    //sensor_tick();
 }
