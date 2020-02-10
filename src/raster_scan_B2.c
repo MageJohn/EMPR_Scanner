@@ -10,7 +10,7 @@
 #define X_RES 2
 #define Y_RES 10
 
-static rgb_vals[X_RES][Y_RES];
+static uint16_t rgb_vals[X_RES][Y_RES];
 
 void main(void) {
     platform_init();

@@ -7,21 +7,28 @@ MAX_VALUE = 0xFFFF
 
 def main(ser):
     data = []
+    
     data_x_y = ser.read(4)
     raw_x_y = unpack("<2H", data_x_y)
-    """
-    loop_no = unpack("<2H",data_x_y)[0]
-    num = unpack("<2H", data_x_y)[1]
-    for i in range(loop_no):
-        temp = []
-        raw_bytes = ser.read(2*num)
-        raw_data = unpack("<"+str(num)+"H", raw_bytes)
-        #masked_colour = tuple((val & MAX_VALUE for val in raw_colour))
-        #colour = compress_gamma(masked_colour)
-        temp.append(raw_data)
+    
+    bytes_to_read = raw_x_y[0] * (2 * raw_x_y[1])
+    unpack_bytes = int(bytes_to_read/2)
+    
+    raw_unpack_bytes = "<"+str(unpack_bytes)+"H"
+    
+    array_vals_from_scan = ser.read(bytes_to_read)
+    raw_array_vals_from_scan = unpack(raw_unpack_bytes, array_vals_from_scan)
+
+    temp = []
+    for i in range(len(raw_array_vals_from_scan)):
+        if len(temp) == 10:
+            data.append(temp)
+            temp = []
+        temp.append(raw_array_vals_from_scan[i])
     data.append(temp)
-    """
-    return (raw_x_y)
+    
+    print(len(raw_array_vals_from_scan))
+    return [(raw_x_y),data]
 
 if __name__ == "__main__":
     ser = Serial("/dev/ttyACM0", 9600)
