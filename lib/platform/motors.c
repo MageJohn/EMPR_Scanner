@@ -1,6 +1,5 @@
 #include "mbed.h"
 #include "platform.h"
-#include "ioboard.h"
 #include "leds.h"
 
 #include "motors.h"
@@ -81,9 +80,9 @@ void platform_motor_update_interval(uint16_t new_interval) {
  * ---------------------------*/
 
 void motors_init(void) {
-    struct LedSource *x_led = led_mux_register_source(2);
-    struct LedSource *y_led = led_mux_register_source(3);
-    struct LedSource *z_led = led_mux_register_source(4);
+    struct LedSource *x_led = led_mux_register_source(X_LED);
+    struct LedSource *y_led = led_mux_register_source(Y_LED);
+    struct LedSource *z_led = led_mux_register_source(Z_LED);
 
     x_state.led = &x_led->num;
     y_state.led = &y_led->num;
@@ -116,14 +115,23 @@ void move_motors(void) {
     };
     uint8_t xy_data = steps[x_state.step] | (steps[y_state.step] << 4);
     uint8_t z_data = steps[(3 - z_state.step) % 5];
+    static uint8_t old_xy;
+    static uint8_t old_z;
 
-    packet.sl_addr7bit = XYLATCH;
-    packet.tx_data = &xy_data;
-    I2C_MasterTransferData(LPC_I2C1, &packet, I2C_TRANSFER_POLLING);
+    if (xy_data != old_xy) {
+        packet.sl_addr7bit = XYLATCH;
+        packet.tx_data = &xy_data;
+        I2C_MasterTransferData(LPC_I2C1, &packet, I2C_TRANSFER_POLLING);
+    }
 
-    packet.sl_addr7bit = ZPENLATCH;
-    packet.tx_data = &z_data;
-    I2C_MasterTransferData(LPC_I2C1, &packet, I2C_TRANSFER_POLLING);
+    if (z_data != old_z) {
+        packet.sl_addr7bit = ZPENLATCH;
+        packet.tx_data = &z_data;
+        I2C_MasterTransferData(LPC_I2C1, &packet, I2C_TRANSFER_POLLING);
+    }
+
+    old_xy = xy_data;
+    old_z = z_data;
 }
 
 void update_limit_switches(void) {
@@ -147,20 +155,20 @@ void update_motor(struct MotorState *state) {
 
     if (state->hard_limit && direction < 0) {
         if (state->calibrate) {
-            state->coord = 0;
             state->calibrate = false;
         }
+        state->coord = 0;
         state->step = 4;
-        return;
     } else if (state->coord >= state->soft_limit && direction > 0) {
         state->step = 4;
-        return;
     } else if (direction) {
-        state->coord += direction;
+        if (!state->calibrate) {
+            state->coord += direction;
+        }
         state->step = ((uint8_t)(state->step + direction)) % 4;
     } else {
         state->step = 4;
     }
 
-    *state->led = state->step;
+    *state->led = state->step != 4;
 }

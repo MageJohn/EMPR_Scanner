@@ -11,7 +11,7 @@
 // Parameters:
 //      void
 
-I2C_M_SETUP_Type M_setup;
+static I2C_M_SETUP_Type M_setup;
 
 void ioboard_i2c_init(void) {
     PINSEL_CFG_Type i2c1_select;
@@ -152,7 +152,7 @@ Status ioboard_i2c_read_register(uint8_t reg, uint8_t *buffer, uint32_t length) 
 //      read_length - the size of the buffer in bytes
 
 Status ioboard_i2c_combined(uint8_t *read_data, uint8_t *write_data,
-                         uint32_t read_length, uint32_t write_length) {
+                            uint32_t read_length, uint32_t write_length) {
     if (M_setup.sl_addr7bit) {
         M_setup.tx_data = write_data;
         M_setup.tx_length = write_length;

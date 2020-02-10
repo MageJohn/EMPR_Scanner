@@ -1,6 +1,7 @@
 #include "lpc_types.h"
 
 void timer_init(void);
+uint32_t micros(void);
 uint32_t millis(void);
 
 void mbed_rit_init(void);

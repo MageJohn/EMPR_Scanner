@@ -1,1 +1,5 @@
 bin/*
+include/
+.clang_complete
+.dir-locals.el
+__pycache__
