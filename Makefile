@@ -68,10 +68,10 @@ motors_test_deps := $(platform_deps)
 stop_motors_deps := ioboard.a
 struct_test_deps := serial.o
 led_mux_test_deps := leds.a mbed.a
-rgb_sensor_test_deps := ioboard.a mbed.a serial.o
 raster_scan_B2_deps := $(platform_deps) serial.o
-motor_patterns_deps := $(platform_deps)
 lib_sensor_test_deps := $(platform_deps) serial.o
+rgb_sensor_test_deps := ioboard.a serial.o
+motor_patterns_deps := $(platform_deps) serial.o
 
 STATIC_LIBS := 
 
@@ -85,7 +85,7 @@ $(OBJ_FILES): %.o: %.c
 
 $(addsuffix .install,$(PROGRAMS)): %.install: %
 	@echo "Attempting to copy $(BIN_DIR)/$*.bin to the MBED file system"
-	@echo "If successful, press the reset button on the MBED to load the new binary"
+	@echo "If successful, press thprint(len(raw_array_vals_from_scan)) reset button on the MBED to load the new binary"
 	cp $(BIN_DIR)/$*.bin /media/$(USER)/MBED &
 	sync
 
