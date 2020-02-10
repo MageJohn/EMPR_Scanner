@@ -4,13 +4,13 @@
 #include "raster_scan_B2.h"
 #include "serial.h"
 
-#define Y_START 100
+#define Y_START 250
 #define X_START 230
-#define Z_START 15
+#define Z_START 25
 #define X_RES 2
 #define Y_RES 10
 
-static uint16_t rgb_vals[X_RES][Y_RES];
+static uint64_t rgb_vals[X_RES][Y_RES];
 
 void main(void) {
     platform_init();
@@ -36,7 +36,7 @@ void one_dimensional_scan_y(int16_t x, int16_t y, int16_t z, int8_t step, uint16
         y += step;
         platform_head_set_coords(x, y, z);
         while(!platform_head_at_coords());
-        //rgb_array[i] = sensor_read();
+        platform_sensor_get_data(rgb_array + i);
         wait_ms(50);
     }
 }
@@ -68,9 +68,7 @@ void send_data(void) {
     serial_write_b(&buffer1, 2);
     serial_write_b(&buffer2, 2);
     int i;
-    for(i = 0; i < X_RES; i++) {
-        buffer = rgb_vals[i];
-        serial_write_b(buffer, 2*Y_RES);
-    }
+    buffer = rgb_vals;
+    serial_write_b(buffer, (8*Y_RES)*X_RES);
 }
 

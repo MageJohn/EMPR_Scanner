@@ -21,6 +21,8 @@ void platform_init(void) {
     SYSTICK_InternalInit(1);
     SYSTICK_IntCmd(ENABLE);
     SYSTICK_Cmd(ENABLE);
+
+    sensor_init();
 }
 
 void SysTick_Handler(void) {
