@@ -4,11 +4,14 @@
 #include <stdbool.h>
 
 // Debug led sources
-#define HB_LED 1
-#define X_LED 2
-#define Y_LED 3
-#define Z_LED 4
-#define RGB_LED 5
+#define LED_BASE (1000)
+#define HB_LED (LED_BASE + 1)
+#define X_LED (LED_BASE + 2)
+#define Y_LED (LED_BASE + 3)
+#define Z_LED (LED_BASE + 4)
+#define RGB_LED (LED_BASE + 5)
+#define SENSOR_LED (LED_BASE + 6)
+#define I2C_LED (LED_BASE + 7)
 
 // Axis limits
 #define X_SOFT_LIMIT 980
@@ -154,66 +157,3 @@ Status platform_i2c_write(uint8_t addr, uint8_t *data, uint32_t length);
 */
 Status platform_i2c_read(uint8_t addr, uint8_t *buffer, uint32_t length);
 
-// Initialise the LCD display, ready for writing to
-//
-// Returns:
-//      void
-//
-// Parameters:
-//      void
-void platform_lcd_init(void);
-
-
-// Clears the display
-//
-// Useful for the R character set, whose Clear_display function is broken
-// There is no need to wait for 165 clock cycles
-//
-// Returns:
-//      void
-//
-// Parameters:
-//      void
-void platform_lcd_clear_display(void);
-
-
-// Transmit the data to the LCD display
-//
-// Returns:
-//      void
-//
-// Parameters:
-//      uint8_t *data: Pointer to the data to transmit
-//      uint32_t length: Length of the data to transmit
-void platform_lcd_send_bytes(uint8_t *data, uint32_t length);
-
-
-// Write arbitrary bytes to the DDRAM
-//
-// Returns:
-//      void
-//
-// Parameters:
-//      uint8_t *bytes: Pointer to the byte array to write
-//      uint8_t length: Length of the byte array to write
-//      uint8_t ddram_addr: DDRAM address to write the bytes to
-void platform_lcd_write_bytes(uint8_t *bytes, uint8_t length, uint8_t ddram_addr);
-
-
-// Write an ascii string to the display
-//
-// Takes a null terminated ascii string and translates it as closely as
-// possible into the character set of the display driver.  Not all ascii
-// characters are supported, and there is no support for the special characters
-// supported by the driver. Unsupported characters will be replaced with an
-// upside down ?. The advantage is that an ascii string literal can be passed.
-// The maximum length of the string is the size of the DDRAM, 80 characters,
-// and a longer string will be truncated.
-//
-// Returns:
-//      void
-//
-// Parameters:
-//      char *string: pointer to the null terminated string to write
-//      uint8_t ddram_addr: ddram address to start writing from
-void platform_lcd_write_ascii(char *string, uint8_t ddram_addr);

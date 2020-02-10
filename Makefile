@@ -72,7 +72,7 @@ rgb_sensor_test_deps := ioboard.a time.o serial.o
 raster_scan_B2_deps := $(platform_deps)
 motor_patterns_deps := $(platform_deps) serial.o
 lib_sensor_test_deps := $(platform_deps) serial.o
-lcd_test_deps := $(platform_deps) serial.o
+lcd_test_deps := $(platform_deps) platform_lcd.a serial.o
 
 STATIC_LIBS := 
 
