@@ -61,5 +61,5 @@ if __name__ == "__main__":
     #a = np.asarray(data[2], dtype='uint8')
     #pprint(a)
     #im = Image.fromarray(a)
-    #im.show()
+    im.show()
 
