@@ -74,8 +74,9 @@ motor_patterns_deps := $(platform_deps) serial.o
 lib_sensor_test_deps := $(platform_deps) serial.o
 lcd_test_deps := $(platform_deps) serial.o
 UI_test_deps := $(platform_deps) serial.o ioboard.a
-manual_platform_move_deps := $(platform_deps) serial.o ioboard.a
 manual_move_UI_deps := $(platform_deps) serial.o
+user_interface_deps := $(platform_deps) serial.o
+motor_patterns_UI_deps := $(platform_deps) serial.o motor_patterns.o
 
 STATIC_LIBS := 
 

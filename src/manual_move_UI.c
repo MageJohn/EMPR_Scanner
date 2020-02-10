@@ -34,13 +34,11 @@ int main(void) {
 
     serial_init();
 
-    ioboard_i2c_init();
-    ioboard_lcd_init();
+    platform_init();
+    platform_lcd_init();
 
-    //TODO: this
-    //platform_init();
-    //platform_calibrate_head();
-    //while(!platform_calibrated())
+    platform_calibrate_head();
+    while(!platform_calibrated());
 
     manual_ui();
 
@@ -98,12 +96,12 @@ void manual_ui(void) {
 
 void ui_moving_info(char axis) {
 
-        ioboard_lcd_clear_display();
+        platform_lcd_clear_display();
         strcpy(data_to_screen, "Press A or B to");
-        ioboard_lcd_write_ascii(data_to_screen, 0);
+        platform_lcd_write_ascii(data_to_screen, 0);
 
         sprintf(data_to_screen, "move %c axis", axis);
-        ioboard_lcd_write_ascii(data_to_screen, 64);
+        platform_lcd_write_ascii(data_to_screen, 64);
 
 }
 
@@ -119,12 +117,12 @@ void move_along_axis(bool flag, uint16_t axis) {
         if (pressed_key == 3) {
 
             // TODO: this
-            //move_axis_up(axis);
+            move_axis_up(axis);
 
         } else if (pressed_key == 2) {
 
             // TODO: this
-            //move_axis_down(axis);
+            move_axis_down(axis);
 
         } else if (pressed_key == 12) {
             flag = false;
@@ -140,38 +138,38 @@ void move_along_axis(bool flag, uint16_t axis) {
 
 void choosing_axis_info() {
 
-    ioboard_lcd_clear_display();
+    platform_lcd_clear_display();
 
     strcpy(data_to_screen, "To move XYZ axis");
-    ioboard_lcd_write_ascii(data_to_screen, 0);
+    platform_lcd_write_ascii(data_to_screen, 0);
 
     strcpy(data_to_screen, "manually..");
-    ioboard_lcd_write_ascii(data_to_screen, 64);
+    platform_lcd_write_ascii(data_to_screen, 64);
 
     wait(1);
 
-    ioboard_lcd_clear_display();
+    platform_lcd_clear_display();
 
     strcpy(data_to_screen, "..press: A -> X");
-    ioboard_lcd_write_ascii(data_to_screen, 0);
+    platform_lcd_write_ascii(data_to_screen, 0);
 
     strcpy(data_to_screen, "B -> Y or C -> Z");
-    ioboard_lcd_write_ascii(data_to_screen, 64);
+    platform_lcd_write_ascii(data_to_screen, 64);
 
 }
 
 
 void move_axis_up(uint16_t axis) {
-
-	axis += 50;
-	platform_head_set_coords(x_axis, y_axis, z_axis);
-
+    if(x_axis <=980 || y_axis <= 850 || z_axis <=7000) {
+	    axis += 50;
+	    platform_head_set_coords(x_axis, y_axis, z_axis);
+    }
 }
 
 
 void move_axis_down(uint16_t axis) {
-
-	axis -= 50;
-	platform_head_set_coords(x_axis, y_axis, z_axis);
-
+    if(x_axis >= 0 || y_axis >=0 || z_axis >= 0) {
+	    axis -= 50;
+	    platform_head_set_coords(x_axis, y_axis, z_axis);
+    }
 }
