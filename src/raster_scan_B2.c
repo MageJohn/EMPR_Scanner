@@ -4,13 +4,14 @@
 #include "raster_scan_B2.h"
 #include "serial.h"
 
-#define Y_START 100
-#define X_START 230
+#define Y_START 150
+#define X_START 280
 #define Z_START 300
-#define X_RES 5
+#define X_RES 10
 #define Y_RES 10
 
 static uint64_t rgb_vals[X_RES * Y_RES];
+static int8_t count = 0;
 
 void main(void) {
     platform_init();
@@ -36,11 +37,8 @@ void one_dimensional_scan_y(int16_t x, int16_t y, int16_t z, int8_t step) {
         y += step;
         platform_head_set_coords(x, y, z);
         while(!platform_head_at_coords());
-        platform_sensor_get_data(&rgb_vals[i]);
-        //time library seems to not work at random??!?!? WTF
-        wait_ms(0.5);
-        //int i;
-        //for (i=0;i<1000000;i++);
+        platform_sensor_get_data(&rgb_vals[i + count]);
+        //wait_ms(100);
     }
 }
 
@@ -52,6 +50,7 @@ void raster_scan(int16_t x, int16_t y, int16_t z, int16_t x_res, int16_t y_res) 
     int16_t start_y = y;
     for(i = 0; i < x_res; i++) {
         one_dimensional_scan_y(x, y, z, step);
+        count += Y_RES;
         x += next_row;
         step *= -1;
         if(y == start_y) {
@@ -73,4 +72,3 @@ void send_data(void) {
     int i;
     serial_write_b(rgb_vals, (8*Y_RES)*X_RES);
 }
-

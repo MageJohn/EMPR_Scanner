@@ -27,7 +27,7 @@ def scaled_compress_gamma(raw):
     return tuple((int(((val/MAX_VALUE) ** (1/GAMMA)) * 255) for val in raw[1:]))
 
 def scaled_expand_gamma(raw):
-    return tuple((int(((val/MAX_VALUE) ** GAMMA) * 355) for val in raw[1:]))
+    return tuple((int(((val/MAX_VALUE) ** GAMMA) * 255) for val in raw[1:]))
 
 def main(ser, term):
     ser.read_until(b"start")
