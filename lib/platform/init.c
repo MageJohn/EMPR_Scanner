@@ -13,7 +13,6 @@ static uint32_t hb_start = 0;
 void platform_init(void) {
     i2c_init();
     motors_init();
-    sensor_init();
     timer_init();
 
     heartbeat = led_mux_register_source(HB_LED);
@@ -21,6 +20,8 @@ void platform_init(void) {
     SYSTICK_InternalInit(1);
     SYSTICK_IntCmd(ENABLE);
     SYSTICK_Cmd(ENABLE);
+
+    sensor_init();
 }
 
 void SysTick_Handler(void) {
