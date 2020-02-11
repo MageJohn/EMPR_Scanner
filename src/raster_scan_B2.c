@@ -7,18 +7,20 @@
 #define Y_START 150
 #define X_START 280
 #define Z_START 300
-#define X_RES 10
-#define Y_RES 10
+#define X_RES 50
+#define Y_RES 50
 
-static uint64_t rgb_vals[X_RES * Y_RES];
-static int8_t count = 0;
+static uint64_t rgb_vals[Y_RES];
+
+static void init_send_data(void);
 
 void main(void) {
     platform_init();
     platform_calibrate_head();
+    platform_sensor_set_integ_cycles(10);
     while(!platform_calibrated());
+    init_send_data();
     raster_scan(X_START, Y_START, Z_START, X_RES, Y_RES);
-    send_data();
 }
 
 //step is no of motor revolutions.
@@ -37,7 +39,7 @@ void one_dimensional_scan_y(int16_t x, int16_t y, int16_t z, int8_t step) {
         y += step;
         platform_head_set_coords(x, y, z);
         while(!platform_head_at_coords());
-        platform_sensor_get_data(&rgb_vals[i + count]);
+        platform_sensor_get_data((uint16_t *)&rgb_vals[i]);
         //wait_ms(100);
     }
 }
@@ -47,28 +49,17 @@ void raster_scan(int16_t x, int16_t y, int16_t z, int16_t x_res, int16_t y_res) 
     int16_t step = (Y_SOFT_LIMIT - y)/y_res;
     int16_t next_row = (X_SOFT_LIMIT - x)/x_res;
     int i;
-    int16_t start_y = y;
     for(i = 0; i < x_res; i++) {
         one_dimensional_scan_y(x, y, z, step);
-        count += Y_RES;
+        serial_write_b((char *)rgb_vals, sizeof(uint64_t) * Y_RES);
         x += next_row;
-        step *= -1;
-        if(y == start_y) {
-            y = Y_SOFT_LIMIT;
-        }
-        else {
-            y = start_y;
-        }
     }
 }
 
-void send_data(void) {
+void init_send_data(void) {
     serial_init();
-    uint16_t buffer;
     uint16_t buffer1 = X_RES;
     uint16_t buffer2 = Y_RES;
-    serial_write_b(&buffer1, 2);
-    serial_write_b(&buffer2, 2);
-    int i;
-    serial_write_b(rgb_vals, (8*Y_RES)*X_RES);
+    serial_write_b((char *)&buffer1, sizeof(uint16_t));
+    serial_write_b((char *)&buffer2, sizeof(uint16_t));
 }
