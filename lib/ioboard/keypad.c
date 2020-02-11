@@ -4,8 +4,8 @@
 // with the function ioboard_i2c_init()
 
 
-uint8_t scancode8b_to_4b(uint8_t scancode8b);
-uint8_t onehot4b_to_binary2b(uint8_t onehot4b);
+static uint8_t scancode8b_to_4b(uint8_t scancode8b);
+static uint8_t onehot4b_to_binary2b(uint8_t onehot4b);
 
 
 bool pressed_keys[NKEYS] = {[0 ... NKEYS-1] = false};
@@ -73,7 +73,7 @@ bool ioboard_keypad_poll(void) {
 bool ioboard_keypad_get_key(uint8_t *pressed) {
     int key;
     bool found_key = ioboard_keypad_poll();
-    
+
     if (found_key) {
         for (key=0; key<NKEYS; key++) {
             if (pressed_keys[key]) {
@@ -93,7 +93,7 @@ bool ioboard_keypad_get_key(uint8_t *pressed) {
 // key is pressed every time. Instead a counter is decremented each time the
 // function is called and the key is still pressed, wrapping at the value of
 // rate, and a key is put into *pressed only if the value equals rate. This
-// function assumes it's being called repeatedly in a loop. 
+// function assumes it's being called repeatedly in a loop.
 //
 // Returns:
 //      bool: true if a key was written to *pressed
