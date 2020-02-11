@@ -15,7 +15,8 @@ struct LedMuxState led_mux_state = {
         .num = 8,
         .id = 0,
         .next = NULL
-    }
+    },
+    .current = NULL,
 };
 
 
@@ -28,7 +29,7 @@ struct LedSource* led_mux_register_source(uint32_t id) {
 
     if (current->id != id) {
         struct LedSource *new = (struct LedSource*)malloc(sizeof(struct LedSource));
-        new->num = id;
+        new->num = 0;
         new->id = id;
         new->next = NULL;
         current->next = new;

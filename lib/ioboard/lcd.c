@@ -1,7 +1,6 @@
 #include <string.h>
 
 #include "ioboard.h"
-#include "lcd.h"
 
 #define LEN(x)  (sizeof(x) / sizeof((x)[0]))
 
