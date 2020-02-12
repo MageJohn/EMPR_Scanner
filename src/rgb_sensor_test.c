@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include "ioboard.h"
-#include "mbed.h"
+#include "time.h"
 #include "serial.h"
 
 #define RGB_SENSOR_ADDR 0x29
@@ -19,6 +19,8 @@ void main(void) {
 
     ioboard_i2c_init();
     ioboard_i2c_address(RGB_SENSOR_ADDR);
+
+    time_init();
 
     serial_init();
 

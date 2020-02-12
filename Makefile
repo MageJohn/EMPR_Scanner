@@ -62,13 +62,13 @@ vpath %.o $(BIN_DIR)
 vpath %.a $(BIN_DIR)
 vpath % $(BIN_DIR)
 
-platform_deps := platform.a mbed.a ioboard.a leds.a
-stepper_test_deps := mbed.a ioboard.a leds.o
+platform_deps := platform.a time.o ioboard.a leds.a
+stepper_test_deps := time.o ioboard.a leds.o
 motors_test_deps := $(platform_deps)
 stop_motors_deps := ioboard.a
 struct_test_deps := serial.o
-led_mux_test_deps := leds.a mbed.a
-rgb_sensor_test_deps := ioboard.a mbed.a serial.o
+led_mux_test_deps := leds.a time.o
+rgb_sensor_test_deps := ioboard.a time.o serial.o
 raster_scan_B2_deps := $(platform_deps)
 motor_patterns_deps := $(platform_deps) serial.o
 lib_sensor_test_deps := $(platform_deps) serial.o

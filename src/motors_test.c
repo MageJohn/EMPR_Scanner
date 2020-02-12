@@ -1,6 +1,6 @@
 #include "platform.h"
 #include "leds.h"
-#include "mbed.h"
+#include "time.h"
 
 void main(void) {
     led_setup();

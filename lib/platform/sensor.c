@@ -1,5 +1,5 @@
 #include <string.h>
-#include "mbed.h"
+#include "time.h"
 
 #include "platform.h"
 #include "sensor.h"

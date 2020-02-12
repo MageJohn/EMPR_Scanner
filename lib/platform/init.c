@@ -1,7 +1,7 @@
 #include "lpc17xx_systick.h"
 
 #include "leds.h"
-#include "mbed.h"
+#include "time.h"
 #include "motors.h"
 #include "sensor.h"
 #include "platform_i2c.h"
@@ -13,7 +13,7 @@ static uint32_t hb_start = 0;
 void platform_init(void) {
     i2c_init();
     motors_init();
-    timer_init();
+    time_init();
 
     heartbeat = led_mux_register_source(HB_LED);
 

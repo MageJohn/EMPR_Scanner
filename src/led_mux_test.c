@@ -1,8 +1,9 @@
 #include "leds.h"
-#include "mbed.h"
+#include "time.h"
 
 void main(void) {
     led_setup();
+    time_init();
     struct LedSource *led1 = led_mux_register_source(1);
     struct LedSource *led2 = led_mux_register_source(2);
 
