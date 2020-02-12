@@ -47,9 +47,15 @@ void platform_init(void);
 
 // Call to have the head go to coordinates x, y, z
 //
+// The coordinates system has (0, 0, 0) at the place where the limit switches
+// are active. The platforms movement can be quite inaccurate however, and so
+// this point can drift. Setting a coordinate to a large negative number would
+// ensure that the switche is reached, at which point that axis is calibrated
+// again.
+//
 // Parameters:
 //      uint16_t x, y, z: The coordinate to move to.
-void platform_head_set_coords(uint16_t x, uint16_t y, uint16_t z);
+void platform_head_set_coords(int16_t x, int16_t y, int16_t z);
 
 // Whether the head is at the coordinates set by platform_head_set_coords.
 //
