@@ -1,5 +1,5 @@
 #include "platform.h"
-#include "mbed.h"
+#include "time.h"
 #include <stdlib.h>
 #include "raster_scan_B2.h"
 #include "serial.h"
