@@ -4,6 +4,9 @@ from struct import unpack
 from pprint import pprint
 from PIL import Image
 import numpy as np
+from datetime import datetime
+from os import path
+
 
 GAMMA = 2.2
 MAX_VALUE = 0xFFFF
@@ -62,6 +65,6 @@ def main(ser):
 if __name__ == "__main__":
     ser = Serial("/dev/ttyACM0", 9600)
     data = main(ser)
-    with open("raw_data.py", 'w') as f:
+    with open(path.expanduser(f"~/EMPR_Scanner/src/python/data/raw_data{datetime.now().strftime('%H%M%S')}.py"), 'w') as f:
         print("data = ", file=f, end="")
         pprint(data, stream=f)

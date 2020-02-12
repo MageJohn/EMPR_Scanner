@@ -27,7 +27,7 @@ static uint8_t integ_cycles;
 
 void platform_sensor_get_data(uint16_t *buffer) {
     platform_i2c_read(RGB_SENSOR_ADDR, (uint8_t *)buffer, 8);
-    wait_us(2400 * integ_cycles);
+    //wait_us(2400 * integ_cycles);
 }
 
 void platform_sensor_set_gain(enum SensorGain gain) {
