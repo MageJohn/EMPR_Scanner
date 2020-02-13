@@ -1,7 +1,9 @@
 #include <string.h>
 
 #include "platform.h"
+#include "platform/platform_i2c.h"	// CHANGE (REMOVE) THIS LINE
 #include "platform_lcd.h"
+
 
 #define LEN(x)  (sizeof(x) / sizeof((x)[0]))
 #define LCD_ADDR 0x3b

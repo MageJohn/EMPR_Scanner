@@ -6,7 +6,7 @@
 int main(void) {
     led_setup();
     platform_init();
-    led_mux_set_curr(HB_LED);
+    led_mux_set_curr(I2C_LED);
 
     platform_lcd_init();
 

@@ -4,6 +4,8 @@
 #include "ioboard.h"
 #include "serial.h"
 #include "platform.h"
+#include "platform_keypad.h"
+#include "platform_lcd.h"
 
 bool exit_condition = false;
 char data_to_screen[30];
@@ -18,10 +20,16 @@ int main(void) {
     platform_lcd_init();
 
     // Calibrate the head
-	platform_calibrate_head();
-	while(!platform_calibrated());
+	//platform_calibrate_head();
+	//while(!platform_calibrated());
 
-    option_menu();
+    platform_lcd_clear_display();
+    strcpy(data_to_screen, "Test");
+    platform_lcd_write_ascii(data_to_screen,0);
+
+    //option_menu();
+
+    return 0;
 
 }
 
@@ -31,7 +39,7 @@ void option_menu() {
 
     while(!exit_condition) {
 
-        ioboard_keypad_get_key(&pressed_key);
+        platform_keypad_poll_key(&pressed_key);
 
         if (pressed_key == 3) {
 

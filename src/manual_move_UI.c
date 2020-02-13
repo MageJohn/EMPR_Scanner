@@ -1,13 +1,15 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "ioboard.h"
+#include "platform_keypad.h"
+#include "platform_lcd.h"
 #include "serial.h"
+#include "time.h"
 #include "platform.h"
 
 
-// Assumes previous I2c init. with ioboard_i2c_init()
-//                  LCD init. ioboard_lcd_init()
+// Assumes previous platform init. with platform_init()
+//                  LCD init. platform_lcd_init()
 
 char data_to_screen[30];
 bool exit_condition = false;
@@ -42,6 +44,8 @@ int main(void) {
 
     manual_ui();
 
+    return 0;
+
 }
 
 void manual_ui(void) {
@@ -50,7 +54,7 @@ void manual_ui(void) {
 
     while(!exit_condition) {
 
-        ioboard_keypad_get_key(&pressed_key);
+        platform_keypad_poll_key(&pressed_key);
 
         if (pressed_key == 3) {
 
@@ -112,7 +116,7 @@ void move_along_axis(bool flag, uint16_t axis) {
 
     while (newflag == true) {
 
-        ioboard_keypad_get_key(&pressed_key);
+        platform_keypad_poll_key(&pressed_key);
 
         if (pressed_key == 3) {
 
