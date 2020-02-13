@@ -1,12 +1,12 @@
 import numpy as np
 from PIL import Image
-from data.raw_data160501 import data
+from data.raw_data144710 import data
 from os import path
 from datetime import datetime
 
 d = data[3]
 for i in range(len(d)):
-    if i % 2 == 1:
+   if i % 2 == 1:
         d[i] = d[i][::-1]
 a = np.asarray(d, dtype="uint8")
 #a = a.transpose((1, 0, 2))

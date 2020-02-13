@@ -6,8 +6,8 @@
 
 #define Y_START 400
 #define X_START 280
-#define Z_START 200
-#define X_RES 50
+#define Z_START 30
+#define X_RES 38
 #define Y_RES 25
 
 static uint64_t rgb_vals[Y_RES];
@@ -33,14 +33,19 @@ void one_dimensional_scan_y(int16_t x, int16_t y, int16_t z, int8_t step) {
         no_steps = abs((Y_SOFT_LIMIT - y)/step);
     }
     int i;
+    platform_calibrate_head();
+    while(!platform_calibrated());
     platform_head_set_coords(x, y, z);
     while(!platform_head_at_coords());
     platform_sensor_get_data(&rgb_vals[0]);
+    wait_ms(1000);
     for(i = 1; i < no_steps; i++) {
         y += step;
+        platform_calibrate_head();
+        while(!platform_calibrated());
         platform_head_set_coords(x, y, z);
         while(!platform_head_at_coords());
-        wait_ms(5);
+        wait_ms(1000);
         platform_sensor_get_data(&rgb_vals[i]);
     }
 }
