@@ -73,6 +73,7 @@ lib_sensor_test_deps := $(platform_deps) serial.o
 raster_scan_B2_deps := $(platform_deps) serial.o
 motor_patterns_deps := $(platform_deps) serial.o
 lcd_test_deps := $(platform_deps) serial.o
+raster_scan_new_deps := $(platform_deps) serial.o
 
 STATIC_LIBS := 
 
