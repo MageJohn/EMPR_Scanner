@@ -2,6 +2,7 @@
 #include "platform.h"
 #include "leds.h"
 
+#include "sensor.h"
 #include "motors.h"
 
 #define XYLATCH 0x3E
@@ -27,6 +28,7 @@ struct MotorState {
 static void update_motor(struct MotorState *state);
 static void update_limit_switches(void);
 static void move_motors(void);
+static void motors_tick(void);
 
 
 // File globals
@@ -35,7 +37,14 @@ static struct MotorState x_state = {.soft_limit = X_SOFT_LIMIT};
 static struct MotorState y_state = {.soft_limit = Y_SOFT_LIMIT};
 static struct MotorState z_state = {.soft_limit = Z_SOFT_LIMIT};
 static uint32_t tick_start = 0;
-static uint16_t interval = DEFAULT_INTERVAL; 
+static uint16_t interval = DEFAULT_INTERVAL;
+
+static uint16_t scan_scale = 1;
+static union ColourData *scan_data;
+static uint16_t data_length;
+static uint16_t scan_step;
+static uint16_t scale_counter;
+static bool scan_enabled;
 
 /* ---------------------
  * Public functons
@@ -75,6 +84,23 @@ void platform_motor_update_interval(uint16_t new_interval) {
     interval = new_interval;
 }
 
+void platform_scanner_config(union ColourData *buffer, uint16_t max_length, uint16_t scale) {
+    scan_scale = scale;
+    scan_data = buffer;
+    data_length = max_length;
+}
+
+uint16_t* platform_scanner_scan_to(int16_t x, int16_t y, int16_t z) {
+    NVIC_DisableIRQ(SysTick_IRQn);
+    platform_head_set_coords(x, y, z);
+    scale_counter = 0;
+    scan_enabled = true;
+    scan_step = 0;
+    NVIC_EnableIRQ(SysTick_IRQn);
+
+    return &scan_step;
+}
+
 /*----------------------------
  * Library private functions
  * ---------------------------*/
@@ -90,15 +116,21 @@ void motors_init(void) {
 }
 
 
-void motors_tick(void) {
+void scanner_tick(void) {
     if (millis() - tick_start > interval) {
-        update_limit_switches();
+        if (scan_enabled) {
+            if ((scale_counter % scan_scale) == 0) {
+                sensor_wait_for_good_data();
+                sensor_direct_get_data(scan_data + scan_step);
+                scan_step++;
+                if (scan_step = data_length) {
+                    scan_enabled = false;
+                }
+            }
+            scale_counter++;
+        }
 
-        update_motor(&x_state);
-        update_motor(&y_state);
-        update_motor(&z_state);
-
-        move_motors();
+        motors_tick();
 
         tick_start = millis();
     }
@@ -108,6 +140,16 @@ void motors_tick(void) {
 /*--------------------------
  * File private functins
  * -------------------------*/
+
+void motors_tick(void) {
+    update_limit_switches();
+
+    update_motor(&x_state);
+    update_motor(&y_state);
+    update_motor(&z_state);
+
+    move_motors();
+}
 
 void move_motors(void) {
     I2C_M_SETUP_Type packet = {

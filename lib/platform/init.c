@@ -32,6 +32,6 @@ void SysTick_Handler(void) {
     }
 
     led_mux_tick();
-    motors_tick();
+    scanner_tick();
     i2c_tick();
 }

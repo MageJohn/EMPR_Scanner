@@ -1,2 +1,2 @@
 void motors_init(void);
-void motors_tick(void);
+void scanner_tick(void);

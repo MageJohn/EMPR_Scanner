@@ -1,6 +1,8 @@
 #include <string.h>
-#include "time.h"
 
+#include "lpc17xx_i2c.h"
+
+#include "time.h"
 #include "platform.h"
 #include "sensor.h"
 
@@ -60,4 +62,22 @@ void sensor_init(void){
 
     // Ensure power on process is complete before continuing.
     wait_us(2400);
+}
+
+void sensor_direct_get_data(union ColourData *data) {
+    I2C_M_SETUP_Type packet = {
+        .sl_addr7bit = RGB_SENSOR_ADDR,
+        .rx_data = data->low_high,
+        .rx_length = 8,
+    };
+    I2C_MasterTransferData(LPC_I2C1, &packet, I2C_TRANSFER_POLLING);
+}
+
+void sensor_wait_for_good_data(void) {
+    // Wait long enough to garauntee a full integration cycle has completed at
+    // the current position. (2.4ms + 2.4ms * integ cycles) is one cycle, but if
+    // the motors have only just stopped not all of the cycle will have been
+    // performed at the current position. Instead wait for twice this long so
+    // that a a full cycle at the current position is performed
+    wait_us(2 * (2400 + (2400 * integ_cycles)));
 }

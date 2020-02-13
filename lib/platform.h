@@ -81,6 +81,32 @@ bool platform_calibrated(void);
 //      uint16_t interval: the interval to use
 void platform_motor_update_interval(uint16_t new_interval);
 
+// Set up the combined motor move/sensor read mode for scanning
+//
+// Parameters:
+//      buffer:     An array of ColourData unions to write the data to.
+//      max_length: The length of the buffer. Once the scan is started, no more
+//                  than this number of data reads will be performed.
+//      scale:      The number of motor steps per sensor read.
+void platform_scanner_config(union ColourData *buffer, uint16_t max_length, uint16_t scale);
+
+// Start the combined motor move/sensor read scan.
+//
+// Atomically sets the head coordinates to (x, y, z) and enables reading from
+// the sensor according to platform_scanner_config. Atomically means it will not
+// be interrupted by SysTick, and so the number of motor moves and sensor reads
+// will line up.
+//
+// Parameters:
+//     x, y, z: The position to scan towards.
+// Returns:
+//      scan_step: A pointer to a variable which holds the number of reads
+//                 performed so far. This will increment every `scale` steps of
+//                 the motor, and `buffer[scan_step]` will be valid, where `buffer`
+//                 and `scale` are those passed to `platform_scanner_config`
+uint16_t* platform_scanner_scan_to(int16_t x, int16_t y, int16_t z);
+
+
 // Copy the latest RGB sesnor data into the buffer passed.The buffer must have
 // enough space to contain 4 16 bit integers.
 //
