@@ -1,6 +1,7 @@
 #include <string.h>
 #include "time.h"
 
+#include "leds.h"
 #include "platform.h"
 #include "sensor.h"
 
@@ -18,6 +19,7 @@
 
 // File private variables
 static bool enable;
+static struct LedSource *led;
 
 
 /*-------------------
@@ -25,17 +27,23 @@ static bool enable;
  * ------------------*/
 
 void platform_sensor_get_data(uint16_t *buffer) {
-    platform_i2c_read(RGB_SENSOR_ADDR, (uint8_t *)buffer, 8);
+    if (enable) {
+        platform_i2c_read(RGB_SENSOR_ADDR, (uint8_t *)buffer, 8);
+    }
 }
 
 void platform_sensor_set_gain(enum SensorGain gain) {
-    uint8_t data[] = {CMD | REG_CONTROL, gain};
-    platform_i2c_write(RGB_SENSOR_ADDR, data, 2);
+    if (enable) {
+        uint8_t data[] = {CMD | REG_CONTROL, gain};
+        platform_i2c_write(RGB_SENSOR_ADDR, data, 2);
+    }
 }
 
 void platform_sensor_set_integ_cycles(uint8_t cycles) {
-    uint8_t data[] = {CMD | REG_CONTROL, 0xFF - cycles};
-    platform_i2c_write(RGB_SENSOR_ADDR, data, 2);
+    if (enable) {
+        uint8_t data[] = {CMD | REG_CONTROL, 0xFF - cycles};
+        platform_i2c_write(RGB_SENSOR_ADDR, data, 2);
+    }
 }
 
 
@@ -44,17 +52,25 @@ void platform_sensor_set_integ_cycles(uint8_t cycles) {
  * --------------------------*/
 
 void sensor_init(void){
-    enable = true;
+    uint8_t test_data = 1;
+    if (platform_i2c_write(RGB_SENSOR_ADDR, &test_data, 1) == SUCCESS) {
+        enable = true;
 
-    // Enable chip
-    uint8_t tx_data[] = {CMD | REG_ENABLE,
-                         ENABLE_PON | ENABLE_AEN};
-    platform_i2c_write(RGB_SENSOR_ADDR, tx_data, 2);
+        // Enable chip
+        uint8_t tx_data[] = {CMD | REG_ENABLE,
+                            ENABLE_PON | ENABLE_AEN};
+        platform_i2c_write(RGB_SENSOR_ADDR, tx_data, 2);
 
-    // Set address to clear high, (with auto-increment)
-    tx_data[0] = CMD | REG_CDATA;
-    platform_i2c_write(RGB_SENSOR_ADDR, tx_data, 1);
+        // Set address to clear high, (with auto-increment)
+        tx_data[0] = CMD | REG_CDATA;
+        platform_i2c_write(RGB_SENSOR_ADDR, tx_data, 1);
 
-    // Ensure power on process is complete before continuing.
-    wait_us(2400);
+        // Ensure power on process is complete before continuing.
+        wait_us(2400);
+    } else {
+        enable = false;
+    }
+
+    led = led_mux_register_source(SENSOR_LED);
+    led->num = enable;
 }

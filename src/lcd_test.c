@@ -1,5 +1,6 @@
 #include "leds.h"
 #include "platform.h"
+#include "platform_lcd.h"
 
 
 int main(void) {
