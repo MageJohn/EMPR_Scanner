@@ -74,6 +74,8 @@ rgb_sensor_test_deps := ioboard.a serial.o
 motor_patterns_deps := $(platform_deps) serial.o
 lib_sensor_test_deps := $(platform_deps) serial.o
 lcd_test_deps := $(platform_deps) serial.o
+keypad_rgb_deps := $(platform_deps) serial.o
+keypad_stepper_deps := $(platform_deps) serial.o
 
 STATIC_LIBS := 
 
