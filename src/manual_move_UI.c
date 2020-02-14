@@ -11,24 +11,32 @@
 // Assumes previous platform init. with platform_init()
 //                  LCD init. platform_lcd_init()
 
-char data_to_screen[30];
-bool exit_condition = false;
-uint8_t pressed_key;
-char buffer[2];
+char data_to_screen[16];
+char buffer[32];
 
-bool x_flag = false;
-bool y_flag = false;
-bool z_flag = false;
+bool cleared_once = false;
+bool exit_condition = false;
+bool key_down = false;
+
+uint8_t pressed_key = 30;
+
+uint8_t step_size = 5;
 
 uint16_t x_axis = 0;
 uint16_t y_axis = 0;
-uint16_t z_axis = 100;
+uint16_t z_axis = 0;
 
-void move_axis_up(uint16_t axis);
-void move_axis_down(uint16_t axis);
+uint16_t x_display = 0;
+uint16_t y_display = 0;
+uint16_t z_display = 0;
+
+uint16_t* x_axis_pointer = &x_axis;
+uint16_t* y_axis_pointer = &y_axis;
+uint16_t* z_axis_pointer = &z_axis;
+
+void move_axis_up(uint16_t *axis);
+void move_axis_down(uint16_t *axis);
 void manual_ui(void);
-void ui_moving_info(char axis);
-void move_along_axis(bool flag, uint16_t axis);
 void choosing_axis_info();
 
 // TEST
@@ -44,7 +52,7 @@ int main(void) {
 
     manual_ui();
 
-    return 0;
+    return 1;
 
 }
 
@@ -56,39 +64,51 @@ void manual_ui(void) {
 
         platform_keypad_poll_key(&pressed_key);
 
-        if (pressed_key == 3) {
+        if (pressed_key == 11) {
 
-            ui_moving_info('X');
-            x_flag = true;
-            
+            key_down = true;
+            move_axis_up(x_axis_pointer);
+
+        } else if (pressed_key == 9) {
+
+            key_down = true;
+            move_axis_down(x_axis_pointer);
+
+        } else if (pressed_key == 6) {
+
+            key_down = true;
+            move_axis_up(y_axis_pointer);
+
+        } else if (pressed_key == 14) {
+
+            key_down = true;
+            move_axis_down(y_axis_pointer);
+
+        } else if (pressed_key == 3) {
+
+            key_down = true;
+            move_axis_up(z_axis_pointer);
+
         } else if (pressed_key == 2) {
 
-            ui_moving_info('Y');
-            y_flag = true;
+            key_down = true;
+            move_axis_down(z_axis_pointer);
 
-        } else if (pressed_key == 1) {
+        } else {
 
-            ui_moving_info('Z');
-            z_flag = true;
+            key_down = false;
+            platform_head_get_coords(&x_axis, &y_axis, &z_axis);
+            platform_head_set_coords(x_axis, y_axis, z_axis);
+            while(!platform_head_at_coords);
 
         }
-        
-        
-        if (x_flag == true) {
 
-            move_along_axis(x_flag, x_axis);
-            x_flag = false;
-
-        } else if (y_flag == true) {
-
-            move_along_axis(y_flag, y_axis);
-            y_flag = false;
-
-        } else if (z_flag == true) {
-
-            move_along_axis(z_flag, z_axis);
-            z_flag = false;
-
+        if ( (pressed_key != 30) && !cleared_once) {
+            platform_lcd_clear_display();
+            cleared_once = true;
+        } else if (cleared_once) {
+            platform_head_get_coords(&x_display, &y_display, &z_display);
+            display_coordinates();
         }
 
         pressed_key = 30;
@@ -97,48 +117,6 @@ void manual_ui(void) {
 
 }
 
-
-void ui_moving_info(char axis) {
-
-        platform_lcd_clear_display();
-        strcpy(data_to_screen, "Press A or B to");
-        platform_lcd_write_ascii(data_to_screen, 0);
-
-        sprintf(data_to_screen, "move %c axis", axis);
-        platform_lcd_write_ascii(data_to_screen, 64);
-
-}
-
-
-void move_along_axis(bool flag, uint16_t axis) {
-
-    bool newflag = flag;
-
-    while (newflag == true) {
-
-        platform_keypad_poll_key(&pressed_key);
-
-        if (pressed_key == 3) {
-
-            // TODO: this
-            move_axis_up(axis);
-
-        } else if (pressed_key == 2) {
-
-            // TODO: this
-            move_axis_down(axis);
-
-        } else if (pressed_key == 12) {
-            flag = false;
-            newflag = false;
-            choosing_axis_info();
-        }
-
-        pressed_key = 30;
-
-    }
-
-}
 
 void choosing_axis_info() {
 
@@ -154,26 +132,87 @@ void choosing_axis_info() {
 
     platform_lcd_clear_display();
 
-    strcpy(data_to_screen, "..press: A -> X");
+    strcpy(data_to_screen, "Press: 2/8 -> X");
     platform_lcd_write_ascii(data_to_screen, 0);
 
-    strcpy(data_to_screen, "B -> Y or C -> Z");
+    strcpy(data_to_screen, "4/6->Y or A/B->Z");
     platform_lcd_write_ascii(data_to_screen, 64);
 
 }
 
 
-void move_axis_up(uint16_t axis) {
-    if(x_axis <=980 || y_axis <= 850 || z_axis <=7000) {
-	    axis += 50;
-	    platform_head_set_coords(x_axis, y_axis, z_axis);
-    }
+void display_coordinates() {
+
+    sprintf(data_to_screen, "X: %4d Y: %4d", x_axis, y_axis);
+    platform_lcd_write_ascii(data_to_screen, 0);
+
+    sprintf(data_to_screen, "Z: %4d", z_axis);
+    platform_lcd_write_ascii(data_to_screen, 64);
+
 }
 
 
-void move_axis_down(uint16_t axis) {
-    if(x_axis >= 0 || y_axis >=0 || z_axis >= 0) {
-	    axis -= 50;
+void move_axis_up(uint16_t *axis) {
+
+    //sprintf(buffer, "%d %d \n\r", axis, x_axis_pointer);
+    //serial_write_b(buffer, 32);
+
+    platform_head_get_coords(x_axis_pointer, y_axis_pointer, z_axis_pointer);
+
+    if( (axis == x_axis_pointer && x_axis < X_SOFT_LIMIT)
+        || (axis == y_axis_pointer && y_axis < Y_SOFT_LIMIT) 
+        || (axis == z_axis_pointer && z_axis < Z_SOFT_LIMIT)) {
+
+	    //(*axis) += step_size;
+
+        if(axis == x_axis_pointer) {
+            x_axis = X_SOFT_LIMIT;
+        } else if (axis == y_axis_pointer) {
+            y_axis = Y_SOFT_LIMIT;
+        } else if (axis == z_axis_pointer) {
+            z_axis = Z_SOFT_LIMIT;
+        }
+
 	    platform_head_set_coords(x_axis, y_axis, z_axis);
+
+        while(key_down) {
+            platform_head_get_coords(&x_display, &y_display, &z_display);
+            display_coordinates();
+        }
+
+        sprintf(buffer, "%d %d %d \n\r ", x_axis, y_axis, z_axis);
+        serial_write_b(buffer, 32);
+
     }
+
+}
+
+
+void move_axis_down(uint16_t *axis) {
+
+    platform_head_get_coords(x_axis_pointer, y_axis_pointer, z_axis_pointer);
+
+    if( (*axis)>0 ) {
+
+	    //(*axis) -= step_size;
+
+        if(axis == x_axis_pointer) {
+            x_axis = 0;
+        } else if (axis == y_axis_pointer) {
+            y_axis = 0;
+        } else if (axis == z_axis_pointer) {
+            z_axis = 0;
+        }
+
+	    platform_head_set_coords(x_axis, y_axis, z_axis);
+        while(key_down) {
+            platform_head_get_coords(&x_display, &y_display, &z_display);
+            display_coordinates();
+        }
+
+        sprintf(buffer, "%d %d %d \n\r", x_axis, y_axis, z_axis);
+        serial_write_b(buffer, 32);
+
+    }
+
 }

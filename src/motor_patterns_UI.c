@@ -7,17 +7,17 @@
 bool exit_condition = false;
 uint8_t pressed_key;
 
-int main(void) {
+// int main(void) {
 
-    serial_init();
-    platform_init();
-    platform_lcd_init();
+//     serial_init();
+//     platform_init();
+//     platform_lcd_init();
 
-    while(!draw_square());
+//     while(!draw_square());
 
-    sprintf(buffer, "ok");
-	serial_write_b(buffer, 2);
-}
+//     sprintf(buffer, "ok");
+// 	serial_write_b(buffer, 2);
+// }
 
 
 void select_test(void) {

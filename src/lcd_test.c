@@ -13,7 +13,7 @@ int main(void) {
     platform_lcd_clear_display();
 
     platform_lcd_write_ascii("hello", 0x00);
-    platform_lcd_write_ascii("world", 0x40);
+    platform_lcd_write_ascii("test", 0x40);
 
     return 0;
 }
