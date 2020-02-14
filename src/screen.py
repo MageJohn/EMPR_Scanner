@@ -57,7 +57,7 @@ class Movement(sdl2.ext.Applicator):
             #sdl2.ext.fill(sdl2.ext.Sprite, val)
         for velocity, sprite in componentsets:
             swidth, sheight = sprite.size
-            #print('Enter RGB Value')
+            #print('Enter RGB Value') #Option to wait for rgb sensor to give data?
             #r = input()
             #g = input()
             #b = input()
