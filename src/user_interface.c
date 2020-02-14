@@ -6,11 +6,16 @@
 #include "platform.h"
 #include "platform_keypad.h"
 #include "platform_lcd.h"
+#include "motor_patterns_UI.h"
+#include "manual_move_UI.h"
 
-bool exit_condition = false;
+bool exit_condition_UI = false;
 char data_to_screen[30];
 uint8_t pressed_key;
 char buffer[2];
+
+void option_menu(void);
+void text_option_menu(void);
 
 int main(void) {
 
@@ -20,38 +25,42 @@ int main(void) {
     platform_lcd_init();
 
     // Calibrate the head
-	//platform_calibrate_head();
-	//while(!platform_calibrated());
+	platform_calibrate_head();
+	while(!platform_calibrated());
 
-    platform_lcd_clear_display();
-    strcpy(data_to_screen, "Test");
-    platform_lcd_write_ascii(data_to_screen,0);
-
-    //option_menu();
+    option_menu();
 
     return 0;
 
 }
 
-void option_menu() {
+void option_menu(void) {
 
     text_option_menu();
 
-    while(!exit_condition) {
+    while(!exit_condition_UI) {
 
         platform_keypad_poll_key(&pressed_key);
 
         if (pressed_key == 3) {
 
-            // Go to motor patterns
-            sprintf(buffer, "jj");
-	        serial_write_b(buffer, 2);
+            // TODO: not working
+
+            // Go to motor patterns UI
+                // Calibrate the head
+	        platform_calibrate_head();
+	        while(!platform_calibrated());
+            select_test();
+            text_option_menu();
 
         } else if (pressed_key == 2) {
 
-            // Go to manual move
-            sprintf(buffer, "aa");
-	        serial_write_b(buffer, 2);
+            // Go to manual move UI
+            // Calibrate the head
+	        platform_calibrate_head();
+	        while(!platform_calibrated());
+            manual_ui();
+            text_option_menu();
 
         }
 
@@ -61,7 +70,7 @@ void option_menu() {
 
 }
 
-void text_option_menu() {
+void text_option_menu(void) {
 
     platform_lcd_clear_display();
     strcpy(data_to_screen, "A -> tests");

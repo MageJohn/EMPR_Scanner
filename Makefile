@@ -70,16 +70,11 @@ struct_test_deps := serial.o
 led_mux_test_deps := leds.a time.o
 rgb_sensor_test_deps := ioboard.a time.o serial.o
 raster_scan_B2_deps := $(platform_deps)
-motor_patterns_deps := $(platform_deps) serial.o
 lib_sensor_test_deps := $(platform_deps) serial.o
 UI_test_deps := $(platform_deps) serial.o ioboard.a
-manual_move_UI_deps := $(platform_deps) serial.o
-user_interface_deps := $(platform_deps) serial.o
-motor_patterns_UI_deps := $(platform_deps) serial.o motor_patterns.o
 lcd_test_deps := $(platform_deps) platform_lcd.a serial.o
 keypad_test_deps := $(platform_deps) platform_keypad.a
-manual_move_UI_deps := $(platform_deps) platform_keypad.a platform_lcd.a serial.o motor_patterns.o
-user_interface_deps := $(platform_deps) platform_keypad.a platform_lcd.a serial.o
+user_interface_deps := $(platform_deps) platform_keypad.a platform_lcd.a serial.o manual_move_UI.o motor_patterns_UI.o motor_patterns.o
 
 STATIC_LIBS := 
 

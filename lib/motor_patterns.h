@@ -1,7 +1,3 @@
-#include "platform.h"
-#include <math.h>
-#include "serial.h"
-
 /*------------------------------
  * CONSTANTS
  *------------------------------*/

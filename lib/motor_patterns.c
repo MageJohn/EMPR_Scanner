@@ -100,10 +100,10 @@ bool test_vertical_axis(void) {
 //	platform_calibrate_head();
 //	while(!platform_calibrated());
 
-	platform_head_set_coords(100,100,7000);
+	platform_head_set_coords(0,0,2000);
 	while(!platform_head_at_coords());
 
-	platform_head_set_coords(100,100,1000);
+	platform_head_set_coords(0,0,100);
 	while(!platform_head_at_coords());
 
 	return true;

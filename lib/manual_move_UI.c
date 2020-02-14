@@ -12,10 +12,9 @@
 //                  LCD init. platform_lcd_init()
 
 char data_to_screen[16];
-char buffer[32];
 
 bool cleared_once = false;
-bool exit_condition = false;
+bool exit_condition;
 bool key_down = false;
 
 uint8_t pressed_key = 30;
@@ -39,28 +38,32 @@ void move_axis_down(uint16_t *axis);
 void manual_ui(void);
 void choosing_axis_info();
 
-// TEST
-int main(void) {
+// // TEST
+// int main(void) {
 
-    serial_init();
+//     serial_init();
 
-    platform_init();
-    platform_lcd_init();
+//     platform_init();
+//     platform_lcd_init();
 
-    platform_calibrate_head();
-    while(!platform_calibrated());
+//     platform_calibrate_head();
+//     while(!platform_calibrated());
 
-    manual_ui();
+//     manual_ui();
 
-    return 1;
+//     return 1;
 
-}
+// }
 
 // Main loop, checks for input
 void manual_ui(void) {
 
     // Displays info on LCD about movement
     choosing_axis_info();
+    pressed_key = 30;
+    exit_condition = false;
+
+    wait_ms(300);
 
     while(!exit_condition) {
 
@@ -97,6 +100,10 @@ void manual_ui(void) {
             key_down = true;
             move_axis_down(z_axis_pointer);
 
+        } else if(pressed_key == 12) {
+
+            exit_condition = true;
+        
         } else {
 
             // Checks if no key is pressed and stops the movement
@@ -144,6 +151,8 @@ void choosing_axis_info() {
     strcpy(data_to_screen, "4/6->Y or A/B->Z");
     platform_lcd_write_ascii(data_to_screen, 64);
 
+    pressed_key = 30;
+
 }
 
 
@@ -178,9 +187,6 @@ void move_axis_up(uint16_t *axis) {
 
 	    platform_head_set_coords(x_axis, y_axis, z_axis);
 
-        sprintf(buffer, "%d %d %d \n\r ", x_axis, y_axis, z_axis);
-        serial_write_b(buffer, 32);
-
     }
 
 }
@@ -203,10 +209,7 @@ void move_axis_down(uint16_t *axis) {
         }
 
 	    platform_head_set_coords(x_axis, y_axis, z_axis);
-
-        sprintf(buffer, "%d %d %d \n\r", x_axis, y_axis, z_axis);
-        serial_write_b(buffer, 32);
-
+        
     }
 
 }

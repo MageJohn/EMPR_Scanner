@@ -1,7 +1,7 @@
 #include <string.h>
 
 #include "platform.h"
-#include "platform/platform_i2c.h"	// CHANGE (REMOVE) THIS LINE
+#include "platform/platform_i2c.h"
 #include "platform_lcd.h"
 
 
