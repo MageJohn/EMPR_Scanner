@@ -56,12 +56,15 @@ int main(void) {
 
 }
 
+// Main loop, checks for input
 void manual_ui(void) {
 
+    // Displays info on LCD about movement
     choosing_axis_info();
 
     while(!exit_condition) {
 
+        // Gets and saves pressed key
         platform_keypad_poll_key(&pressed_key);
 
         if (pressed_key == 11) {
@@ -96,6 +99,7 @@ void manual_ui(void) {
 
         } else {
 
+            // Checks if no key is pressed and stops the movement
             key_down = false;
             platform_head_get_coords(&x_axis, &y_axis, &z_axis);
             platform_head_set_coords(x_axis, y_axis, z_axis);
@@ -103,10 +107,12 @@ void manual_ui(void) {
 
         }
 
+        // Display moving information only once, otherwise clean it
         if ( (pressed_key != 30) && !cleared_once) {
             platform_lcd_clear_display();
             cleared_once = true;
         } else if (cleared_once) {
+            // DIsplay coordinates to lcd constantly
             platform_head_get_coords(&x_display, &y_display, &z_display);
             display_coordinates();
         }
@@ -117,7 +123,7 @@ void manual_ui(void) {
 
 }
 
-
+// Information on manual movement
 void choosing_axis_info() {
 
     platform_lcd_clear_display();
@@ -143,10 +149,10 @@ void choosing_axis_info() {
 
 void display_coordinates() {
 
-    sprintf(data_to_screen, "X: %4d Y: %4d", x_axis, y_axis);
+    sprintf(data_to_screen, "X: %4d Y: %4d", x_display, y_display);
     platform_lcd_write_ascii(data_to_screen, 0);
 
-    sprintf(data_to_screen, "Z: %4d", z_axis);
+    sprintf(data_to_screen, "Z: %4d", z_display);
     platform_lcd_write_ascii(data_to_screen, 64);
 
 }
@@ -154,17 +160,14 @@ void display_coordinates() {
 
 void move_axis_up(uint16_t *axis) {
 
-    //sprintf(buffer, "%d %d \n\r", axis, x_axis_pointer);
-    //serial_write_b(buffer, 32);
-
     platform_head_get_coords(x_axis_pointer, y_axis_pointer, z_axis_pointer);
 
+    // Check all axis upper bounds
     if( (axis == x_axis_pointer && x_axis < X_SOFT_LIMIT)
         || (axis == y_axis_pointer && y_axis < Y_SOFT_LIMIT) 
         || (axis == z_axis_pointer && z_axis < Z_SOFT_LIMIT)) {
 
-	    //(*axis) += step_size;
-
+        // Check for controlled axis
         if(axis == x_axis_pointer) {
             x_axis = X_SOFT_LIMIT;
         } else if (axis == y_axis_pointer) {
@@ -174,11 +177,6 @@ void move_axis_up(uint16_t *axis) {
         }
 
 	    platform_head_set_coords(x_axis, y_axis, z_axis);
-
-        while(key_down) {
-            platform_head_get_coords(&x_display, &y_display, &z_display);
-            display_coordinates();
-        }
 
         sprintf(buffer, "%d %d %d \n\r ", x_axis, y_axis, z_axis);
         serial_write_b(buffer, 32);
@@ -192,10 +190,10 @@ void move_axis_down(uint16_t *axis) {
 
     platform_head_get_coords(x_axis_pointer, y_axis_pointer, z_axis_pointer);
 
+    // Check for lower bounds
     if( (*axis)>0 ) {
 
-	    //(*axis) -= step_size;
-
+        // Checks for controlled axis
         if(axis == x_axis_pointer) {
             x_axis = 0;
         } else if (axis == y_axis_pointer) {
@@ -205,10 +203,6 @@ void move_axis_down(uint16_t *axis) {
         }
 
 	    platform_head_set_coords(x_axis, y_axis, z_axis);
-        while(key_down) {
-            platform_head_get_coords(&x_display, &y_display, &z_display);
-            display_coordinates();
-        }
 
         sprintf(buffer, "%d %d %d \n\r", x_axis, y_axis, z_axis);
         serial_write_b(buffer, 32);

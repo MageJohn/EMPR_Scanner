@@ -15,8 +15,8 @@
 #define KP_LED (LED_BASE + 8)
 
 // Axis limits
-#define X_SOFT_LIMIT 1200
-#define Y_SOFT_LIMIT 1200
+#define X_SOFT_LIMIT 980
+#define Y_SOFT_LIMIT 850
 #define Z_SOFT_LIMIT 7000
 
 
