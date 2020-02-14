@@ -62,6 +62,7 @@ void manual_ui(void) {
     choosing_axis_info();
     pressed_key = 30;
     exit_condition = false;
+    cleared_once = false;
 
     wait_ms(300);
 
