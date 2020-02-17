@@ -73,6 +73,7 @@ lib_sensor_test_deps := $(platform_deps) serial.o
 rgb_sensor_test_deps := ioboard.a mbed.a serial.o
 motor_patterns_deps := $(platform_deps) serial.o
 lcd_test_deps := $(platform_deps) serial.o
+flag_detect_deps := $(platform_deps) serial.o
 
 STATIC_LIBS := 
 

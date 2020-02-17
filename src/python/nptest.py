@@ -1,6 +1,6 @@
 import numpy as np
 from PIL import Image
-from data.raw_data144710 import data
+from data.raw_data100511 import data
 from os import path
 from datetime import datetime
 

@@ -41,8 +41,8 @@ void one_dimensional_scan_y(int16_t x, int16_t y, int16_t z, int8_t step) {
     wait_ms(1000);
     for(i = 1; i < no_steps; i++) {
         y += step;
-        platform_calibrate_head();
-        while(!platform_calibrated());
+        //platform_calibrate_head();
+        //while(!platform_calibrated());
         platform_head_set_coords(x, y, z);
         while(!platform_head_at_coords());
         wait_ms(1000);
