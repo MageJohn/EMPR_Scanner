@@ -3,12 +3,20 @@
 
 #include "serial.h"
 
+// The serial can queue a max of 16 bytes before waiting for the queue to empty again.
+// The blocking functions below wait for the queue to empty and then continue, the non-blocking ones
+// send or recieve a maximum of 16 bytes
+
 uint32_t serial_read_nb(char *buf, uint32_t length) {
     return(UART_Receive((LPC_UART_TypeDef *)LPC_UART0, (uint8_t *)buf, length, NONE_BLOCKING));
 }
 
 uint32_t serial_read_b(char *buf, uint32_t length) {
   return(UART_Receive((LPC_UART_TypeDef *)LPC_UART0, (uint8_t *)buf, length, BLOCKING));
+}
+
+uint32_t serial_write_nb(char *buf, uint32_t length) {
+    return(UART_Send((LPC_UART_TypeDef *)LPC_UART0, (uint8_t *)buf, length, NONE_BLOCKING));
 }
 
 uint32_t serial_write_b(char *buf, uint32_t length) {
