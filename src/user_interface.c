@@ -44,10 +44,8 @@ void option_menu(void) {
 
         if (pressed_key == 3) {
 
-            // TODO: not working
-
             // Go to motor patterns UI
-                // Calibrate the head
+            // Calibrate the head
 	        platform_calibrate_head();
 	        while(!platform_calibrated());
             select_test();

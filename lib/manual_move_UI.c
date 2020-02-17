@@ -1,5 +1,6 @@
 #include <string.h>
 #include <stdio.h>
+#include <math.h>
 
 #include "platform_keypad.h"
 #include "platform_lcd.h"
@@ -16,6 +17,7 @@ char data_to_screen[16];
 bool cleared_once = false;
 bool exit_condition;
 bool key_down = false;
+bool rgb_flag = false;
 
 uint8_t pressed_key = 30;
 
@@ -29,6 +31,12 @@ uint16_t x_display = 0;
 uint16_t y_display = 0;
 uint16_t z_display = 0;
 
+uint64_t rgb_buffer[1];
+
+uint8_t red_display;
+uint8_t green_display;
+uint8_t blue_display;
+
 uint16_t* x_axis_pointer = &x_axis;
 uint16_t* y_axis_pointer = &y_axis;
 uint16_t* z_axis_pointer = &z_axis;
@@ -36,24 +44,11 @@ uint16_t* z_axis_pointer = &z_axis;
 void move_axis_up(uint16_t *axis);
 void move_axis_down(uint16_t *axis);
 void manual_ui(void);
-void choosing_axis_info();
+void choosing_axis_info(void);
+void display_coordinates(void);
+void get_rgb_values(void);
+void display_rgb_values(void);
 
-// // TEST
-// int main(void) {
-
-//     serial_init();
-
-//     platform_init();
-//     platform_lcd_init();
-
-//     platform_calibrate_head();
-//     while(!platform_calibrated());
-
-//     manual_ui();
-
-//     return 1;
-
-// }
 
 // Main loop, checks for input
 void manual_ui(void) {
@@ -102,8 +97,21 @@ void manual_ui(void) {
             move_axis_down(z_axis_pointer);
 
         } else if(pressed_key == 12) {
-
+            
+            // GO back to UI and exit manual move
             exit_condition = true;
+
+        } else if(pressed_key == 0) {
+
+            // Switch between showing axis position and rgb values
+            if(!rgb_flag) {
+                rgb_flag = true;
+            } else if (rgb_flag) {
+                rgb_flag = false;
+            }
+
+            platform_lcd_clear_display();
+            wait_ms(200);
         
         } else {
 
@@ -120,9 +128,15 @@ void manual_ui(void) {
             platform_lcd_clear_display();
             cleared_once = true;
         } else if (cleared_once) {
-            // DIsplay coordinates to lcd constantly
-            platform_head_get_coords(&x_display, &y_display, &z_display);
-            display_coordinates();
+            // Display coordinates/rgb value to lcd constantly
+            //platform_head_get_coords(&x_display, &y_display, &z_display);
+
+            if (!rgb_flag) {
+                display_coordinates();
+            } else if (rgb_flag) {
+                display_rgb_values();
+            }
+
         }
 
         pressed_key = 30;
@@ -157,7 +171,36 @@ void choosing_axis_info() {
 }
 
 
+void display_rgb_values() {
+
+    get_rgb_values();
+
+    sprintf(data_to_screen, "R: %3d", red_display);
+    platform_lcd_write_ascii(data_to_screen, 0);
+
+    sprintf(data_to_screen, "G: %3d B: %3d", green_display, blue_display);
+    platform_lcd_write_ascii(data_to_screen, 64);
+
+}
+
+
+void get_rgb_values() {
+
+    platform_sensor_get_data(&rgb_buffer);
+
+    uint16_t *p = (uint16_t *)&rgb_buffer;
+
+    // Convert from 16-bit raw data to 8-bit RGB representation
+    red_display = ((float)p[1]/65536)*255;
+    green_display = ((float)p[2]/65536)*255;
+    blue_display = ((float)p[3]/65536)*255;
+
+}
+
+
 void display_coordinates() {
+
+    platform_head_get_coords(&x_display, &y_display, &z_display);
 
     sprintf(data_to_screen, "X: %4d Y: %4d", x_display, y_display);
     platform_lcd_write_ascii(data_to_screen, 0);
@@ -172,7 +215,7 @@ void move_axis_up(uint16_t *axis) {
 
     platform_head_get_coords(x_axis_pointer, y_axis_pointer, z_axis_pointer);
 
-    // Check all axis upper bounds
+    // Check for upper bounds
     if( (axis == x_axis_pointer && x_axis < X_SOFT_LIMIT)
         || (axis == y_axis_pointer && y_axis < Y_SOFT_LIMIT) 
         || (axis == z_axis_pointer && z_axis < Z_SOFT_LIMIT)) {
