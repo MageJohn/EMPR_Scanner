@@ -1,12 +1,8 @@
 from read_raster import main
 from serial import Serial
+from pprint import pprint
 
-flags ={("blue", "red", "blue"): "Iceland", ("blue", "white", "blue"): "Iceland", ("red", "white", "black"): "Syria", 
-        ("black", "white", "red"): "Syria", ("white", "white","white"): "France", ("blue", "blue","blue"): "France",
-        ("red", "red","red"): "France",("red", "white","blue"): "France", ("blue", "white","red"): "France",
-        ("red","green","green"): "Burkina Faso", ("green","green","red"): "Burkina Faso", ("green","white","green"): "Burundi",
-        ("red","white","red"): "Burundi",("red","white","white"): "Burundi",("green","white","white"): "Burundi", 
-        ("white","white","green"): "Burundi"}
+flags ={12: "Iceland", -52: "Syria", 278: "Burkino Faso", 120: "North Macedonia", 82: "Burundi"}
 
 black = 15000
 white = 55000
@@ -18,7 +14,7 @@ def detect_shade(values, deviance):
     max_col = max(colours)
     min_col = min(colours)
 
-    if (shade > 65000 and max_col > 6500):
+    if (shade > 65000 and max_col > 65000):
         return "white"
 
     elif((min_col + deviance) >= max_col):
@@ -43,30 +39,73 @@ def rotations(data):
     angle_270 = []
 
     for row in data:
-        angle_180.append(row[::-1])
-        angle_90[0].append(row[0])
-        angle_90[1].append(row[1])
-        angle_90[2].append(row[2])
+        angle_180.insert(0, row[::-1])
+        angle_90[0].insert(0, row[0])
+        angle_90[1].insert(0, row[1])
+        angle_90[2].insert(0, row[2])
     
-    angle_270.append(angle_90[::-1])
+    for row in angle_90:
+        angle_270.insert(0, row[::-1])
 
-    return data, angle_90, angle_180, angle_270
+    return [data, angle_90, angle_180, angle_270]
+
+def hash_single_row(hash_vals, row_colours):
+    r = ("red", 0)
+    g = ("green", 1)
+    b = ("blue", 2)
+    bl = ("black", 3)
+    wh = ("white", 4)
+
+    refer = [r,g,b,bl,wh]
+
+    hash_value = 0
+    
+    for colour in row_colours:
+        for datum in refer:
+            if colour == datum[0]:
+                hash_value += hash_vals[datum[1]]
+    
+    return hash_value
+
+
+def simple_hash(hash_vals, flag_iden_matrix):
+
+    tmp  = []
+    for rows in flag_iden_matrix:
+        tmp.append(hash_single_row(hash_vals, rows))
+    
+    final_hash = 0
+    for vals in tmp:
+        final_hash += vals
+
+    return final_hash
+
+def closest_flag(dict, search_key):
+    res = dict.get(search_key) or dict[min(dict.keys(), key = lambda key: abs(key - search_key))]
+    return res
 
 
 if __name__ == "__main__":
     ser = Serial("/dev/ttyACM0", 9600)
     data = main(ser)
     data = data[1]
-    print(data)
-    print(rotations(data))
+    #print(data)
+    rot = rotations(data)
+    pprint(rot)
     
     flag_iden = []
-    for rows in data:
-        temp = []
-        for cols in rows:
-            temp.append(detect_shade(cols,10000))
-        flag_iden.append(temp)
+    for angles in rot:
+        for rows in angles:
+            temp = []
+            for cols in rows:
+                temp.append(detect_shade(cols,10000))
+            flag_iden.append(temp)
 
     print(flag_iden)
+
+    print(simple_hash([-1,0,1,-10,10], flag_iden))
+    search_key = simple_hash([-100], flag_iden)
+    country = closest_flag(flags, search_key)
+    print(country)
     #flag_iden = tuple(flag_iden)
     #print(flags[flag_iden])
