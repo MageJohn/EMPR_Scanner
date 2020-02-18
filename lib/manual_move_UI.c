@@ -128,8 +128,8 @@ void manual_ui(void) {
             platform_lcd_clear_display();
             cleared_once = true;
         } else if (cleared_once) {
+            
             // Display coordinates/rgb value to lcd constantly
-            //platform_head_get_coords(&x_display, &y_display, &z_display);
 
             if (!rgb_flag) {
                 display_coordinates();

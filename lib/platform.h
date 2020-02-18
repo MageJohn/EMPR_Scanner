@@ -16,7 +16,7 @@
 
 // Axis limits
 #define X_SOFT_LIMIT 980
-#define Y_SOFT_LIMIT 850
+#define Y_SOFT_LIMIT 860
 #define Z_SOFT_LIMIT 7000
 
 
