@@ -4,13 +4,13 @@
 #include "raster_scan_B2.h"
 #include "serial.h"
 
-#define X_ONE 275
+#define X_ONE 175
 #define X_TWO 475
-#define X_THREE 675
-#define Y_ONE 400
+#define X_THREE 775
+#define Y_ONE 450
 #define Y_TWO 600
-#define Y_THREE 800
-#define Z 25
+#define Y_THREE 750
+#define Z 50
 
 #define X_RES 3
 #define Y_RES 3

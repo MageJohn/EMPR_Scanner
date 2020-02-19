@@ -2,7 +2,8 @@ from read_raster import main
 from serial import Serial
 from pprint import pprint
 
-flags ={12: "Iceland", -52: "Syria", 278: "Burkino Faso", 120: "North Macedonia", 82: "Burundi"}
+flags ={12: "Iceland", -12: "Syria", 780: "Burkino Faso", 120: "France", 1276: "Burundi", 1116: "North Macedonia", 752: "Sudan", 
+        500: "UK", 164: "Czechia", 708: "Bulgaria", 796: "CAR", 636: "Belarus"}
 
 black = 15000
 white = 55000
@@ -14,7 +15,7 @@ def detect_shade(values, deviance):
     max_col = max(colours)
     min_col = min(colours)
 
-    if (shade > 65000 and max_col > 65000):
+    if (shade > 65000 and max_col > 60000):
         return "white"
 
     elif((min_col + deviance) >= max_col):
@@ -103,8 +104,8 @@ if __name__ == "__main__":
 
     print(flag_iden)
 
-    print(simple_hash([-1,0,1,-10,10], flag_iden))
-    search_key = simple_hash([-100], flag_iden)
+    print(simple_hash([-1,50,1,-10,10], flag_iden))
+    search_key = simple_hash([-1,50,1,-10,10], flag_iden)
     country = closest_flag(flags, search_key)
     print(country)
     #flag_iden = tuple(flag_iden)
