@@ -18,6 +18,7 @@
 
 // File private variables
 static bool enable;
+static uint8_t integ_cycles;
 
 
 /*-------------------
@@ -26,6 +27,7 @@ static bool enable;
 
 void platform_sensor_get_data(uint16_t *buffer) {
     platform_i2c_read(RGB_SENSOR_ADDR, (uint8_t *)buffer, 8);
+    //wait_us(2400 * integ_cycles);
 }
 
 void platform_sensor_set_gain(enum SensorGain gain) {
@@ -34,6 +36,7 @@ void platform_sensor_set_gain(enum SensorGain gain) {
 }
 
 void platform_sensor_set_integ_cycles(uint8_t cycles) {
+    integ_cycles = cycles;
     uint8_t data[] = {CMD | REG_CONTROL, 0xFF - cycles};
     platform_i2c_write(RGB_SENSOR_ADDR, data, 2);
 }

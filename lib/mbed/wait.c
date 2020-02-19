@@ -9,11 +9,6 @@ void wait_ms(uint32_t time) {
 }
 
 void wait_us(uint32_t time) {
-    mbed_rit_init();
-    mbed_rit_set(time);
-    mbed_rit_state(ENABLE);
-
-    while (!mbed_rit_get_int_status()) {
-        continue;
-    }
+    uint32_t start = micros();
+    while(micros() - start <= time);
 }
