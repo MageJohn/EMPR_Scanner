@@ -25,11 +25,20 @@ bool y_flag = false;
 
 char data_to_screen[30];
 
-int main(void) {
+// int main(void) {
 
-    serial_init();
-    platform_init();
-    platform_lcd_init();
+//     serial_init();
+//     platform_init();
+//     platform_lcd_init();
+
+//     detect_edges();
+
+//     return 1;
+
+// }
+
+
+void detect_edges(void) {
 
 	platform_calibrate_head();
 	while(!platform_calibrated());
@@ -37,18 +46,17 @@ int main(void) {
     platform_head_set_coords(300,300,0);
     while(!platform_head_at_coords());
 
-    detect_edges();
+    wait_ms(400);
 
-    return 1;
-
-}
-
-
-void detect_edges(void) {
+    platform_lcd_clear_display();
+    strcpy(data_to_screen, "Detecting");
+    platform_lcd_write_ascii(data_to_screen,0);
+    strcpy(data_to_screen, "edges");
+    platform_lcd_write_ascii(data_to_screen,64);
 
     while(!detection_completed) {
 
-        get_rgb_values();
+        get_rgb_edges();
 
         platform_head_get_coords(&x, &y, &z);
 
@@ -56,7 +64,7 @@ void detect_edges(void) {
 
             platform_head_set_coords(2000, y, z);
 
-        } else if (x_flag && red < 2 && blue < 2 && green < 2) {
+        } else if (x_flag && red <= 2 && blue <= 2 && green <= 2) {
 
             platform_x_edge = x;
             x_flag = false;
@@ -68,7 +76,7 @@ void detect_edges(void) {
 
             platform_head_set_coords(x, 0, z);
 
-        } else if (y_flag && red < 2 && blue < 2 && green < 2) {
+        } else if (y_flag && red <= 2 && blue <= 2 && green <= 2) {
 
             platform_y_edge = Y_SOFT_LIMIT;
             y_flag = false;
@@ -85,13 +93,19 @@ void detect_edges(void) {
     strcpy(data_to_screen, "X: 980  Y: 860");
     platform_lcd_write_ascii(data_to_screen, 64);
 
+    red = 10;
+    green = 10;
+    blue = 10;
+    detection_completed = false;
+    x_flag = true;
+
     platform_calibrate_head();
 	while(!platform_calibrated());
 
 }
 
 
-void get_rgb_values() {
+void get_rgb_edges(void) {
 
     platform_sensor_get_data(&rgb_buffer);
 
@@ -102,13 +116,4 @@ void get_rgb_values() {
     green = ((float)p[2]/65536)*255;
     blue = ((float)p[3]/65536)*255;
 
-}
-
-
-int get_x_edge(void) {
-    return X_SOFT_LIMIT;
-}
-
-int get_y_edge(void) {
-    return Y_SOFT_LIMIT;
 }

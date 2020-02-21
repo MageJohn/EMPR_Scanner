@@ -59,6 +59,7 @@ void manual_ui(void) {
     exit_condition = false;
     cleared_once = false;
 
+    // Delay for readability
     wait_ms(300);
 
     while(!exit_condition) {
@@ -98,7 +99,7 @@ void manual_ui(void) {
 
         } else if(pressed_key == 12) {
             
-            // GO back to UI and exit manual move
+            // Go back to UI and exit manual move
             exit_condition = true;
 
         } else if(pressed_key == 0) {
@@ -111,7 +112,7 @@ void manual_ui(void) {
             }
 
             platform_lcd_clear_display();
-            wait_ms(200);
+            wait_ms(200);   // Delay for debouncing 
         
         } else {
 
@@ -186,8 +187,8 @@ void display_rgb_values() {
 
 void get_rgb_values() {
 
+    // Get raw clear-rgb values, place them in array
     platform_sensor_get_data(&rgb_buffer);
-
     uint16_t *p = (uint16_t *)&rgb_buffer;
 
     // Convert from 16-bit raw data to 8-bit RGB representation

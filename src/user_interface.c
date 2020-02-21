@@ -8,6 +8,7 @@
 #include "platform_lcd.h"
 #include "motor_patterns_UI.h"
 #include "manual_move_UI.h"
+#include "platform_edge_detection.h"
 
 bool exit_condition_UI = false;
 char data_to_screen[30];
@@ -28,6 +29,13 @@ int main(void) {
 	platform_calibrate_head();
 	while(!platform_calibrated());
 
+    // Set limits
+    detect_edges();
+
+    // Wait for reading the set edge limits
+    wait(1);
+
+    // Go into UI
     option_menu();
 
     return 0;
