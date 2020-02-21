@@ -25,7 +25,15 @@ static bool enable;
  * ------------------*/
 
 void platform_sensor_get_data(uint16_t *buffer) {
-    platform_i2c_read(RGB_SENSOR_ADDR, (uint8_t *)buffer, 8);
+    uint8_t set_reg = CMD | REG_CDATA;
+    I2C_M_SETUP_Type packet = {
+        .sl_addr7bit = RGB_SENSOR_ADDR,
+        .tx_data = &set_reg,
+        .tx_length = 1,
+        .rx_data = (uint8_t *)buffer,
+        .rx_length = 8,
+    };
+    platform_i2c_transfer_blocking(&packet);
 }
 
 void platform_sensor_set_gain(enum SensorGain gain) {
@@ -48,12 +56,9 @@ void sensor_init(void){
 
     // Enable chip
     uint8_t tx_data[] = {CMD | REG_ENABLE,
-                         ENABLE_PON | ENABLE_AEN};
-    platform_i2c_write(RGB_SENSOR_ADDR, tx_data, 2);
-
-    // Set address to clear high, (with auto-increment)
-    tx_data[0] = CMD | REG_CDATA;
-    platform_i2c_write(RGB_SENSOR_ADDR, tx_data, 1);
+                         ENABLE_PON | ENABLE_AEN,
+                         0xff};
+    platform_i2c_write(RGB_SENSOR_ADDR, tx_data, 3);
 
     // Ensure power on process is complete before continuing.
     wait_us(2400);
