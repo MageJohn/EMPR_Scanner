@@ -42,7 +42,7 @@ void platform_sensor_set_gain(enum SensorGain gain) {
 }
 
 void platform_sensor_set_integ_cycles(uint8_t cycles) {
-    uint8_t data[] = {CMD | REG_CONTROL, 0xFF - cycles};
+    uint8_t data[] = {CMD | REG_CONTROL, 256 - cycles};
     platform_i2c_write(RGB_SENSOR_ADDR, data, 2);
 }
 

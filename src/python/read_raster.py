@@ -6,6 +6,7 @@ from PIL import Image
 import numpy as np
 from datetime import datetime
 from os import path
+from nptest import makeim
 
 
 GAMMA = 2.2
@@ -16,6 +17,7 @@ def main(ser):
 
     data_x_y = ser.read(4)
     raw_x_y = unpack("<2H", data_x_y)
+    print(raw_x_y)
 
     bytes_to_read = raw_x_y[0] * (8  * raw_x_y[1])
     unpack_bytes = int(bytes_to_read/2)
@@ -68,3 +70,4 @@ if __name__ == "__main__":
     with open(path.expanduser(f"~/EMPR_Scanner/src/python/data/raw_data{datetime.now().strftime('%H%M%S')}.py"), 'w') as f:
         print("data = ", file=f, end="")
         pprint(data, stream=f)
+    makeim(data)
