@@ -1,7 +1,6 @@
 #include <string.h>
 
 #include "ioboard.h"
-#include "lcd.h"
 
 #define LEN(x)  (sizeof(x) / sizeof((x)[0]))
 
@@ -138,7 +137,7 @@ void ioboard_lcd_write_bytes(uint8_t *bytes, uint8_t length, uint8_t ddram_addr)
     I2C_MasterTransferData(LPC_I2C1, &packet, I2C_TRANSFER_POLLING);
 
     packet.tx_data = data;
-    packet.tx_length = DDRAM_SIZE+1;
+    packet.tx_length = length + 1;
     I2C_MasterTransferData(LPC_I2C1, &packet, I2C_TRANSFER_POLLING);
 }
 

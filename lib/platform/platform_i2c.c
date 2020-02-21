@@ -2,69 +2,29 @@
 #include "lpc_types.h"
 #include "lpc17xx_pinsel.h"
 
+#include "queue.h"
+
 #include "platform.h"
 #include "platform_i2c.h"
 
-static struct TransferLL {
-    struct Transfer *head;
-    struct Transfer *tail;
-} transfer_ll;
+static struct Queue userq;
+static struct Queue systq;
 
 /*-------------------
  * Public functions
  * ------------------*/
 
-struct Transfer* platform_i2c_schedule_transfer(I2C_M_SETUP_Type *packet) {
-    struct Transfer *new_transfer = (struct Transfer *)malloc(sizeof(struct Transfer));
-    new_transfer->packet = packet;
-    new_transfer->status = RUNNING;
-    new_transfer->next = NULL;
-
-    if (transfer_ll.tail) {
-        // There are transfers in the linked list
-        transfer_ll.tail->next = new_transfer;
-    } else {
-        // The linked list empty
-        transfer_ll.head = new_transfer;
-    }
-
-    transfer_ll.tail = new_transfer;
-
-    return new_transfer;
-}
-
-void platform_i2c_remove_transfer(struct Transfer *transfer) {
-    if (transfer_ll.head == transfer_ll.tail && transfer_ll.tail == transfer) {
-        // this is the only element in the list
-        transfer_ll.head = NULL;
-        transfer_ll.tail = NULL;
-    } else if (transfer_ll.head == transfer) {
-        transfer_ll.head = transfer->next;
-    } else {
-        struct Transfer *current = transfer_ll.head;
-
-        while (current->next && current->next != transfer) {
-            current = current->next;
-        }
-        current->next = transfer->next;
-    }
-
-    free(transfer);
+Status platform_i2c_schedule_transfer(I2C_M_SETUP_Type *packet) {
+    return push(&userq, (void *)packet);
 }
 
 Status platform_i2c_transfer_blocking(I2C_M_SETUP_Type *packet) {
-    struct Transfer *transfer = platform_i2c_schedule_transfer(packet);
+    enum I2C_Status status = platform_i2c_schedule_transfer(packet);
 
-    while (transfer->status == RUNNING);
-
-    enum I2C_Status status = transfer->status;
-    platform_i2c_remove_transfer(transfer);
-
-    if (status == FINISHED) {
-        return SUCCESS;
-    } else {
-        return ERROR;
+    if (status == ERROR) {
+        return status;
     }
+
 }
 
 Status platform_i2c_write(uint8_t addr, uint8_t *data, uint32_t length) {

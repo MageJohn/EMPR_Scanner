@@ -105,48 +105,14 @@ void platform_sensor_set_gain(enum SensorGain gain);
 void platform_sensor_set_integ_cycles(uint8_t cycles);
 
 /*
-  Schedule an I2C transfer and block until completion.
-
-  Parameters: Same as for platform_i2c_schedule_transfer
-
-  Returns:
-    SUCCESS if the transfer was successfull
-    ERROR if the transfer failed
-*/
-Status platform_i2c_transfer_blocking(I2C_M_SETUP_Type *packet);
-
-/*
-  Adds a new I2C transfer to be completed.
-
-  Parameters:
-    addr: the I2C address to initiate the transfer with
-    tx_data: a pointer to the data to transmit
-    tx_length: the number of bytes to transmit
-    rx_data: a pointer to a buffer to read into
-    rx_length: the number of bytes to read
-  Returns:
-    The id of the transaction, to be used with platform_i2c_transfer_status
-*/
-struct Transfer* platform_i2c_schedule_transfer(I2C_M_SETUP_Type *packet);
-
-/*
-  Remove a transfer from the linked list and free it's memory. If the transfer
-  has not run, it will now never run.
-
-  Parameters:
-    transfer: A pointer to the transfer to remove
-*/
-void platform_i2c_remove_transfer(struct Transfer *transfer);
-
-/*
   Write the length bytes from the location pointed to by data to addr
 
   Parameters:
-    addr: the i2c address to write too
-    data: a pointer to the data to write
-    length: the number of bytes to write
+  addr: the i2c address to write too
+  data: a pointer to the data to write
+  length: the number of bytes to write
   Returns:
-    SUCCESS or ERROR
+  SUCCESS or ERROR
 */
 Status platform_i2c_write(uint8_t addr, uint8_t *data, uint32_t length);
 
@@ -154,12 +120,41 @@ Status platform_i2c_write(uint8_t addr, uint8_t *data, uint32_t length);
   Read the length bytes from the addr into the location pointed to by buffer
 
   Parameters:
-    addr: the i2c address to read from
-    data: a pointer to a buffer to put the data in
-    length: the number of bytes to read
+  addr: the i2c address to read from
+  data: a pointer to a buffer to put the data in
+  length: the number of bytes to read
 
   Returns:
-    SUCCESS or ERROR
+  SUCCESS or ERROR
 */
 Status platform_i2c_read(uint8_t addr, uint8_t *buffer, uint32_t length);
+
+/*
+  Schedule an I2C transfer and block until completion.
+
+  Parameters:
+      packet: An I2C setup struct describing the transfer
+
+  Returns:
+    SUCCESS if the transfer was successful
+    ERROR if the transfer failed
+*/
+Status platform_i2c_transfer_blocking(I2C_M_SETUP_Type *packet);
+
+/*
+  Adds a new I2C transfer to be completed.
+
+  The pointer passed must remain valid until the transaction is completed; in
+  particular, if the packet is declared in a function then it only exists on the
+  stack, and if the function returns before the I2C transaction is completed
+  then the memory may be reused by a different function and the data will be
+  garbage.
+
+  Parameters:
+      packet: An I2C setup struct describing the transfer.
+  Returns:
+      ERROR if there wasn't enough space in the queue.
+      SUCCESS if the transfer was successfully scheduled.
+*/
+Status platform_i2c_schedule_transfer(I2C_M_SETUP_Type *packet);
 
