@@ -25,18 +25,6 @@ bool y_flag = false;
 
 char data_to_screen[30];
 
-// int main(void) {
-
-//     serial_init();
-//     platform_init();
-//     platform_lcd_init();
-
-//     detect_edges();
-
-//     return 1;
-
-// }
-
 
 void detect_edges(void) {
 
@@ -46,6 +34,7 @@ void detect_edges(void) {
     platform_head_set_coords(300,300,0);
     while(!platform_head_at_coords());
 
+    // A delay for RGB sensor
     wait_ms(400);
 
     platform_lcd_clear_display();
@@ -93,6 +82,7 @@ void detect_edges(void) {
     strcpy(data_to_screen, "X: 980  Y: 860");
     platform_lcd_write_ascii(data_to_screen, 64);
 
+    // Cleanup
     red = 10;
     green = 10;
     blue = 10;

@@ -13,7 +13,6 @@
 bool exit_condition_UI = false;
 char data_to_screen[30];
 uint8_t pressed_key;
-char buffer[2];
 
 void option_menu(void);
 void text_option_menu(void);
