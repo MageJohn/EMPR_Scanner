@@ -143,9 +143,13 @@ def run():
             if event.type == sdl2.SDL_QUIT:
                 running = False
                 break
+            if event.type == sdl2.SDL_KEYDOWN:
+                if event.key.keysym.sym == sdl2.SDLK_UP: #CHECK IF NEW RGB VALUE HAS BEEN RECEIVED
+                    #UPDATE RGB VALUES THEN WORLD.PROCESS
+                    world.process()
         #REMOVE BELOW DELAY AFTER TEST
         #sdl2.SDL_Delay(10)
-        world.process()
+        
         
     
 

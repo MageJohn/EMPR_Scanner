@@ -143,7 +143,7 @@ class Movement(sdl2.ext.Applicator):
 
             pmaxx = sprite.x + swidth
             pmaxy = sprite.y + sheight
-            if pmaxx > self.maxx:
+            if pmaxx > self.maxx:     #CHECK WHEN END CONDTION OF THE SCANNER HAS BEEN REACHED AND MAKE NEW LINE
                 prev_pixel = factory.from_color(COLOR, size=(pixel_size, pixel_size))
                 Pixel(world, prev_pixel, sprite.x, sprite.y)
                 self.draw.velocity.vx = -self.draw.velocity.vx

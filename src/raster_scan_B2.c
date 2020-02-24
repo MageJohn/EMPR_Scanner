@@ -8,7 +8,7 @@
 #define X_START 280
 #define Z_START 30
 #define X_RES 38
-#define Y_RES 1
+#define Y_RES 10
 
 static uint64_t rgb_vals[1];
 
@@ -39,7 +39,6 @@ void one_dimensional_scan_y(int16_t x, int16_t y, int16_t z, int8_t step) {
     while(!platform_head_at_coords());
     platform_sensor_get_data(&rgb_vals[0]);
     wait_ms(1000);
-    serial_write_b((char *)rgb_vals, sizeof(uint64_t));
     for(i = 1; i < no_steps; i++) {
         y += step;
         //platform_calibrate_head();
@@ -48,7 +47,6 @@ void one_dimensional_scan_y(int16_t x, int16_t y, int16_t z, int8_t step) {
         while(!platform_head_at_coords());
         wait_ms(1000);
         platform_sensor_get_data(&rgb_vals[i]);
-        serial_write_b((char *)rgb_vals, sizeof(uint64_t));
     }
 }
 
