@@ -23,6 +23,10 @@ uint32_t serial_write_b(char *buf, uint32_t length) {
     return(UART_Send((LPC_UART_TypeDef *)LPC_UART0, (uint8_t *)buf, length, BLOCKING));
 }
 
+bool serial_nb_write_finished(void) {
+    FlagStatus status = UART_CheckBusy(LPC_UART0);
+    return (status == SET) ? false : true;
+}
 
 void serial_init(void) {
     UART_CFG_Type UARTConfigStruct;  // UART Configuration structure variable
