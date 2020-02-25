@@ -17,6 +17,7 @@
 #define ENABLE_PON (0x1)
 
 // File private variables
+static uint8_t atime = 0xff;
 static bool enable;
 
 
@@ -42,8 +43,16 @@ void platform_sensor_set_gain(enum SensorGain gain) {
 }
 
 void platform_sensor_set_integ_cycles(uint8_t cycles) {
-    uint8_t data[] = {CMD | REG_CONTROL, 256 - cycles};
+    if (cycles < 1) {
+        return;
+    }
+    atime = 256 - cycles;
+    uint8_t data[] = {CMD | REG_ATIME, atime};
     platform_i2c_write(RGB_SENSOR_ADDR, data, 2);
+}
+
+void platform_sensor_wait_for_integration(void) {
+    wait_us(2 * (2400 + 2400 * (256 - atime)));
 }
 
 
@@ -57,7 +66,7 @@ void sensor_init(void){
     // Enable chip
     uint8_t tx_data[] = {CMD | REG_ENABLE,
                          ENABLE_PON | ENABLE_AEN,
-                         0xff};
+                         atime};
     platform_i2c_write(RGB_SENSOR_ADDR, tx_data, 3);
 
     // Ensure power on process is complete before continuing.

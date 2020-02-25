@@ -116,6 +116,11 @@ void platform_sensor_set_integ_cycles(uint8_t cycles);
 Status platform_i2c_transfer_blocking(I2C_M_SETUP_Type *packet);
 
 /*
+  Wait for a an integration cycle to fully run
+*/
+void platform_sensor_wait_for_integration(void);
+
+/*
   Adds a new I2C transfer to be completed.
 
   Parameters:
