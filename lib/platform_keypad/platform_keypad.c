@@ -96,7 +96,6 @@ void platform_keypad_int_init(void) {
 
 void EINT3_IRQHandler(void) {
     uint8_t reads;
-    bool event = false;
     for (reads = 10; reads > 0; reads--) {
         uint32_t value = GPIO_ReadValue(0);
         if ((value & (1 << KP_INT_PIN)) == 1) {

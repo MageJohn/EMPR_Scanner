@@ -120,7 +120,7 @@ void manual_ui(void) {
             key_down = false;
             platform_head_get_coords(&x_axis, &y_axis, &z_axis);
             platform_head_set_coords(x_axis, y_axis, z_axis);
-            while(!platform_head_at_coords);
+            while(!platform_head_at_coords());
 
         }
 
@@ -188,7 +188,7 @@ void display_rgb_values() {
 void get_rgb_values() {
 
     // Get raw clear-rgb values, place them in array
-    platform_sensor_get_data(&rgb_buffer);
+    platform_sensor_get_data((uint16_t *)&rgb_buffer);
     uint16_t *p = (uint16_t *)&rgb_buffer;
 
     // Convert from 16-bit raw data to 8-bit RGB representation
