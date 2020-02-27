@@ -7,6 +7,7 @@ import numpy as np
 from PIL import Image, ImageEnhance
 import os
 import os.path
+import io
 
 
 class DataProcessing:
@@ -22,6 +23,8 @@ class DataProcessing:
     def read_pixel(self):
         # one pixel is four 16 bit values
         pixel = self.ser.read(8)
+        if len(pixel) < 8:
+            raise io.BlockingIOError()
         if self.output is not None:
             self.output.write(pixel)
         pixel = unpack("<4H", pixel)

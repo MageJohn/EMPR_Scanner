@@ -1,3 +1,4 @@
+import io
 import os
 import ctypes
 from serial import Serial
@@ -16,38 +17,37 @@ class Scanner(Thread):
         super().__init__(name=name, daemon=True)
         self.args = args
         self.event = event
+        self.event.user.code = SCANNER_NEW_PIXEL
         if args.from_file is not None:
             output = None
             inp = args.from_file
         else:
-            output = open(args.raw_out, 'wb')
-            inp = Serial("/dev/ttyACM0", 9600)
+            output = open(args.raw_out, "wb")
+            inp = Serial("/dev/ttyACM0", 9600, timeout=0.5)
             inp.write(1)
         if args.invert_gamma:
-            args.gamma = 1/args.gamma
-        self.dp = DataProcessing(
-            inp, args.gamma, args.integ_cycles, output, args.track
-        )
+            args.gamma = 1 / args.gamma
+        self.dp = DataProcessing(inp, args.gamma, args.integ_cycles, output, args.track)
         self.size = self.dp.get_size()
-        print("image size:", self.size)
 
         self.sprite = factory.create_sprite(size=self.size)
 
     def run(self):
         self.running = True
         array = sdl2.ext.pixels2d(self.sprite)
-        print("array dtype: ", array.dtype)
-        try:
-            for i, pix in enumerate(self.dp.data_reader()):
-                array.flat[i] = int.from_bytes(pack("3B", *self.dp.raw_to_rgb(pix, self.args.max_type)), 'big')
-                self.event.user.code = SCANNER_NEW_PIXEL
-                sdl2.SDL_PushEvent(ctypes.byref(self.event))
-                if self.running == False:
-                    break
-        except Exception as e:
-            if self.dp.output is not None:
-                os.remove(self.dp.output.name)
-            raise e
+        for i in range(array.size):
+            while self.running:
+                try:
+                    pix = self.dp.read_pixel()
+                    array.flat[i] = int.from_bytes(
+                        pack("3B", *self.dp.raw_to_rgb(pix, self.args.max_type)), "big"
+                    )
+                    sdl2.SDL_PushEvent(ctypes.byref(self.event))
+                except io.BlockingIOError:
+                    continue
+                break
+            if self.running is False:
+                break
 
     def join(self):
         self.running = False
@@ -59,9 +59,11 @@ class Scanner(Thread):
 
 def run(args):
     sdl2.ext.init()
-    window = sdl2.ext.Window("Live scan", (800, 600),
-                             flags=(sdl2.SDL_WINDOW_SHOWN
-                                    | sdl2.SDL_WINDOW_RESIZABLE))
+    window = sdl2.ext.Window(
+        "Live scan",
+        (800, 600),
+        flags=(sdl2.SDL_WINDOW_SHOWN | sdl2.SDL_WINDOW_RESIZABLE),
+    )
 
     scanner_event_type = sdl2.SDL_RegisterEvents(1)
     if scanner_event_type == -1:
@@ -86,7 +88,8 @@ def run(args):
                 break
             if event.type == scanner_event_type:
                 tex = sdl2.SDL_CreateTextureFromSurface(
-                    renderer.sdlrenderer, scanner.sprite.surface).contents
+                    renderer.sdlrenderer, scanner.sprite.surface
+                ).contents
                 renderer.copy(tex)
                 renderer.present()
             if event.type == sdl2.SDL_WINDOWEVENT:
