@@ -3,16 +3,16 @@
 #include "leds.h"
 
 #define Z 40
-#define X_END 860
-#define X_START 140
-#define Y_END 860
-#define Y_START 400
-#define X_RES 24
-#define Y_RES 16
-#define INTEG_CYCLES 10
-#define WAIT true
+#define X_END 820
+#define X_START 220
+#define Y_END 850
+#define Y_START 150
+#define X_RES 50
+#define Y_RES 70
+#define INTEG_CYCLES 1
+#define WAIT false
 #define CAL_XY false
-#define CAL_XY_FREQ 5
+#define CAL_XY_FREQ 10
 #define CAL_Y true
 #define TWO_WAY false
 
