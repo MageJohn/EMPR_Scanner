@@ -11,10 +11,10 @@ void main(void) {
     int out_len;
 
     platform_init();
-    led_setup();
+    leds_init();
     serial_init();
 
-    led_mux_set_curr(HB_LED);
+    leds_mux_set_curr(HB_LED);
 
     out_len = snprintf((char *)out_buf, OUT_BUF_MAX, "start");
     serial_write_b((char *)out_buf, (uint32_t)out_len);

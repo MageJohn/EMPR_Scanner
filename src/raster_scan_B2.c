@@ -17,19 +17,19 @@ static void init_send_data(void);
 void raster_scan(int16_t x, int16_t y, int16_t z, int16_t grid_size_x, int16_t grid_size_y);
 void one_dimensional_scan_y(int16_t x, int16_t y, int16_t z, int8_t step);
 
-struct LedSource *led;
+uint8_t *led;
 
 void main(void) {
-    led_setup();
-    led = led_mux_register_source(1000);
+    leds_init();
+    led = leds_mux_register_source(1000);
     platform_init();
-    led_mux_set_curr(1000);
+    leds_mux_set_curr(1000);
     platform_calibrate_head();
-    led->num = 1;
+    *led = 1;
     while(!platform_calibrated());
-    led->num += 1;
+    *led += 1;
     init_send_data();
-    led->num += 1;
+    *led += 1;
 
     raster_scan(X_START, Y_START, Z_START, X_RES, Y_RES);
 }
@@ -57,11 +57,11 @@ void raster_scan(int16_t x, int16_t y, int16_t z, int16_t x_res, int16_t y_res) 
     int16_t step = (Y_SOFT_LIMIT - y)/y_res;
     int16_t next_row = (X_SOFT_LIMIT - x)/x_res;
     uint16_t start_y = y;
-    led->num += 1;
+    *led += 1;
     for(; x < X_SOFT_LIMIT; x += next_row) {
-        led->num += 1;
+        *led += 1;
         one_dimensional_scan_y(x, y, z, step);
-        led->num += 1;
+        *led += 1;
         serial_write_b((char *)rgb_vals, sizeof(uint64_t) * Y_RES);
         y = (y == start_y) ? Y_SOFT_LIMIT : start_y;
         step *= -1;

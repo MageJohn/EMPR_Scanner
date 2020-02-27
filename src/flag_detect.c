@@ -90,9 +90,9 @@ void main(void) {
     int16_t y_stop = (Y_START + Y_RES * y_step);
     int16_t x_stop = (X_START + X_RES * x_step);
 
-    led_setup();
+    leds_init();
     platform_init();
-    led_mux_set_curr(HB_LED);
+    leds_mux_set_curr(HB_LED);
 
     platform_calibrate_head();
     init_send_data();

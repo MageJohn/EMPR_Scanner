@@ -2,20 +2,20 @@
 #include "time.h"
 
 void main(void) {
-    led_setup();
+    leds_init();
     time_init();
-    struct LedSource *led1 = led_mux_register_source(1);
-    struct LedSource *led2 = led_mux_register_source(2);
+    uint8_t *led1 = leds_mux_register_source(1);
+    uint8_t *led2 = leds_mux_register_source(2);
 
-    led1->num = 1;
-    led2->num = 2;
+    *led1 = 1;
+    *led2 = 2;
 
     while (1) {
-        led_mux_set_curr(1);
-        led_mux_tick();
+        leds_mux_set_curr(1);
+        leds_mux_tick();
         wait_ms(500);
-        led_mux_set_curr(2);
-        led_mux_tick();
+        leds_mux_set_curr(2);
+        leds_mux_tick();
         wait_ms(500);
     }
 }

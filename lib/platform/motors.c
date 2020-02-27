@@ -86,13 +86,9 @@ void platform_head_get_coords(uint16_t *x, uint16_t *y, uint16_t *z) {
  * ---------------------------*/
 
 void motors_init(void) {
-    struct LedSource *x_led = led_mux_register_source(X_LED);
-    struct LedSource *y_led = led_mux_register_source(Y_LED);
-    struct LedSource *z_led = led_mux_register_source(Z_LED);
-
-    x_state.led = &x_led->num;
-    y_state.led = &y_led->num;
-    z_state.led = &z_led->num;
+    x_state.led = leds_mux_register_source(X_LED);
+    y_state.led = leds_mux_register_source(Y_LED);
+    z_state.led = leds_mux_register_source(Z_LED);
 }
 
 

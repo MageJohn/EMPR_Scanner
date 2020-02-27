@@ -4,9 +4,9 @@
 
 
 int main(void) {
-    led_setup();
+    leds_init();
     platform_init();
-    led_mux_set_curr(I2C_LED);
+    leds_mux_set_curr(HB_LED);
 
     platform_lcd_init();
 
