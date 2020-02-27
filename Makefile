@@ -74,6 +74,7 @@ motor_patterns_deps := $(platform_deps) serial.o
 lib_sensor_test_deps := $(platform_deps) serial.o
 lcd_test_deps := $(platform_deps) platform_lcd.a serial.o
 flag_detect_deps := $(platform_deps) serial.o
+draw_mbed_deps := $(platform_deps) serial.o
 
 STATIC_LIBS := 
 

@@ -15,11 +15,11 @@ def auto_canny(image, sigma = 0.33):
     return edged
 
 if __name__ == "__main__":
-    im = cv2.imread("emoji1.png")
+    im = cv2.imread("emoji.png")
     dim = (1000,1000)
     resized = cv2.resize(im, dim, interpolation=cv2.INTER_AREA)
     image = auto_canny(im)
-    dim = (200,200)
+    dim = (50,50)
     resized = cv2.resize(image, dim, interpolation=cv2.INTER_AREA)
     cv2.imwrite("edged.png", resized)
 
