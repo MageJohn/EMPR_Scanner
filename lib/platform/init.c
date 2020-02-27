@@ -11,11 +11,13 @@ static struct LedSource* heartbeat;
 static uint32_t hb_start = 0;
 
 void platform_init(void) {
+    led_setup();
     i2c_init();
     motors_init();
     time_init();
 
     heartbeat = led_mux_register_source(HB_LED);
+    led_mux_set_curr(HB_LED);
 
     SYSTICK_InternalInit(1);
     SYSTICK_IntCmd(ENABLE);
