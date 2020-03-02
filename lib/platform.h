@@ -112,6 +112,9 @@ void platform_sensor_set_gain(enum SensorGain gain);
 // cycles.
 void platform_sensor_set_integ_cycles(uint8_t cycles);
 
+// Get the number of integration cycles for the chip.
+uint8_t platform_sensor_get_integ_cycles(void);
+
 /*
   Schedule an I2C transfer and block until completion.
 

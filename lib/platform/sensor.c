@@ -55,6 +55,10 @@ void platform_sensor_set_integ_cycles(uint8_t cycles) {
     platform_i2c_write(RGB_SENSOR_ADDR, data, 2);
 }
 
+uint8_t platform_sensor_get_integ_cycles(void) {
+    return 256 - atime;
+}
+
 void platform_sensor_wait_for_integration(void) {
     wait_us(2 * (2400 + 2400 * (256 - atime)));
 }
