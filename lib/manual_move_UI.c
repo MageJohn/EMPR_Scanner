@@ -1,3 +1,11 @@
+/*
+
+This is part A3 and B1 combined into one file,
+since they are almost identical, but differs only
+by output to LCD screen.
+
+*/
+
 #include <string.h>
 #include <stdio.h>
 #include <math.h>

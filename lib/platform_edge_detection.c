@@ -1,3 +1,9 @@
+/*
+
+This is A2, detects edges and sets limits.
+
+*/
+
 #include <string.h>
 #include <stdio.h>
 

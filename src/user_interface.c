@@ -1,3 +1,11 @@
+/* 
+
+This file combines parts A1, A2, A3 and B1 into a single user interface
+file, from which the previously mentioned parts can be accessed
+and demonstrated.
+
+*/
+
 #include <stdio.h>
 #include <string.h>
 

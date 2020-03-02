@@ -1,3 +1,10 @@
+/*
+
+This is second part of A1, the actual file for
+drawing and making the patterns.
+
+*/
+
 #include "platform.h"
 #include <math.h>
 #include "serial.h"

@@ -1,3 +1,10 @@
+/*
+
+This is part one of A1, this file combines all patters mentioned in A1
+and lets the user choose between them.
+
+*/
+
 #include <stdio.h>
 #include <string.h>
 
