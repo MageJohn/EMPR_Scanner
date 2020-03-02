@@ -62,18 +62,19 @@ vpath %.o $(BIN_DIR)
 vpath %.a $(BIN_DIR)
 vpath % $(BIN_DIR)
 
-platform_deps := platform.a time.o ioboard.a leds.a
+platform_deps := platform.a time.o leds.a
 stepper_test_deps := time.o ioboard.a leds.o
 motors_test_deps := $(platform_deps)
 stop_motors_deps := ioboard.a
 struct_test_deps := serial.o
 led_mux_test_deps := leds.a time.o
 rgb_sensor_test_deps := ioboard.a time.o serial.o
-raster_scan_B2_deps := $(platform_deps) serial.o
-motor_patterns_deps := $(platform_deps) serial.o
+raster_scan_B2_deps := $(platform_deps)
 lib_sensor_test_deps := $(platform_deps) serial.o
+UI_test_deps := $(platform_deps) serial.o ioboard.a
 lcd_test_deps := $(platform_deps) platform_lcd.a serial.o
-flag_detect_deps := $(platform_deps) serial.o
+keypad_test_deps := $(platform_deps) platform_keypad.a
+user_interface_deps := $(platform_deps) platform_keypad.a platform_lcd.a serial.o manual_move_UI.o motor_patterns_UI.o motor_patterns.o platform_edge_detection.o
 draw_mbed_deps := $(platform_deps) serial.o
 C1_deps := $(platform_deps) platform_lcd.a serial.o
 

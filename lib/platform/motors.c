@@ -75,6 +75,12 @@ void platform_motor_update_interval(uint16_t new_interval) {
     interval = new_interval;
 }
 
+void platform_head_get_coords(uint16_t *x, uint16_t *y, uint16_t *z) {
+    *x = x_state.coord;
+    *y = y_state.coord;
+    *z = z_state.coord;
+}
+
 /*----------------------------
  * Library private functions
  * ---------------------------*/

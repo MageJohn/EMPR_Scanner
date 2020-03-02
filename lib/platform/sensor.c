@@ -1,6 +1,7 @@
 #include <string.h>
 #include "time.h"
 
+#include "leds.h"
 #include "platform.h"
 #include "sensor.h"
 
@@ -19,6 +20,7 @@
 // File private variables
 static uint8_t atime = 0xff;
 static bool enable;
+static struct LedSource *led;
 
 
 /*-------------------
@@ -38,8 +40,10 @@ void platform_sensor_get_data(uint16_t *buffer) {
 }
 
 void platform_sensor_set_gain(enum SensorGain gain) {
-    uint8_t data[] = {CMD | REG_CONTROL, gain};
-    platform_i2c_write(RGB_SENSOR_ADDR, data, 2);
+    if (enable) {
+        uint8_t data[] = {CMD | REG_CONTROL, gain};
+        platform_i2c_write(RGB_SENSOR_ADDR, data, 2);
+    }
 }
 
 void platform_sensor_set_integ_cycles(uint8_t cycles) {
@@ -61,7 +65,9 @@ void platform_sensor_wait_for_integration(void) {
  * --------------------------*/
 
 void sensor_init(void){
-    enable = true;
+    uint8_t test_data = 1;
+    if (platform_i2c_write(RGB_SENSOR_ADDR, &test_data, 1) == SUCCESS) {
+        enable = true;
 
     // Enable chip
     uint8_t tx_data[] = {CMD | REG_ENABLE,
@@ -71,4 +77,5 @@ void sensor_init(void){
 
     // Ensure power on process is complete before continuing.
     wait_us(2400);
+}
 }

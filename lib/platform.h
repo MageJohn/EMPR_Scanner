@@ -12,10 +12,11 @@
 #define RGB_LED (LED_BASE + 5)
 #define SENSOR_LED (LED_BASE + 6)
 #define I2C_LED (LED_BASE + 7)
+#define KP_LED (LED_BASE + 8)
 
 // Axis limits
 #define X_SOFT_LIMIT 980
-#define Y_SOFT_LIMIT 850
+#define Y_SOFT_LIMIT 860
 #define Z_SOFT_LIMIT 7000
 
 
@@ -83,6 +84,13 @@ bool platform_calibrated(void);
 // Parameters:
 //      uint16_t interval: the interval to use
 void platform_motor_update_interval(uint16_t new_interval);
+
+// Put the current coordinats into *x, *y, *z.
+//
+// Parameters:
+//      uint16_t *x, *y, *z: Pointers to memory locations to put the coordinates
+//                           into
+void platform_head_get_coords(uint16_t *x, uint16_t *y, uint16_t *z);
 
 // Copy the latest RGB sesnor data into the buffer passed.The buffer must have
 // enough space to contain 4 16 bit integers.

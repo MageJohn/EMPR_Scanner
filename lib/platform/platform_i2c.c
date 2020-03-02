@@ -4,11 +4,17 @@
 
 #include "platform.h"
 #include "platform_i2c.h"
+#include "leds.h"
+#include "time.h"
 
 static struct TransferLL {
     struct Transfer *head;
     struct Transfer *tail;
 } transfer_ll;
+
+static struct LedSource *led;
+
+#define TIMEOUT 500
 
 /*-------------------
  * Public functions
@@ -55,7 +61,9 @@ void platform_i2c_remove_transfer(struct Transfer *transfer) {
 Status platform_i2c_transfer_blocking(I2C_M_SETUP_Type *packet) {
     struct Transfer *transfer = platform_i2c_schedule_transfer(packet);
 
-    while (transfer->status == RUNNING);
+    uint32_t time_start = millis();
+
+    while ((millis() - time_start < TIMEOUT) && transfer->status == RUNNING);
 
     enum I2C_Status status = transfer->status;
     platform_i2c_remove_transfer(transfer);
@@ -109,6 +117,8 @@ void i2c_init(void) {
 
     transfer_ll.head = NULL;
     transfer_ll.tail = NULL;
+
+    led = led_mux_register_source(I2C_LED);
 }
 
 void i2c_tick(void) {
@@ -125,6 +135,9 @@ void i2c_tick(void) {
                                                     I2C_TRANSFER_POLLING);
 
             current->status = status ? FINISHED : FAILED;
+
+            // Blink an led when I2C transfers are happening
+            led->num ^= 2;
         }
     }
 }

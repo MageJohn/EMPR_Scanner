@@ -1,12 +1,20 @@
+/*
+
+This is second part of A1, the actual file for
+drawing and making the patterns.
+
+*/
+
 #include "platform.h"
 #include <math.h>
 #include "serial.h"
 
-#define Z_AXIS 4000
+#define Z_AXIS 400
 #define PI 3.14159265	
 
 
-// THE FUNCTIONS ASSUME THAT PLATFORM HAS BEEN INITIALIZED AND CALIBRATED!
+// THE FUNCTIONS ASSUME THAT PLATFORM HAS BEEN INITIALIZED AND CALIBRATED
+// BY USING: platform_init(); --> platform_calibrate_head(); --> while(!platform_calibrated()); !
 
 // The stepper motors draw a square following the borders of platform
 //
@@ -15,7 +23,7 @@
 //
 // Parameters:
 //      void
-void draw_square(void) {
+bool draw_square(void) {
 	
 	uint16_t x_coords[5] = {50, 950, 950, 50, 50};
 	uint16_t y_coords[5] = {50, 50, 950, 950, 50};
@@ -33,7 +41,8 @@ void draw_square(void) {
 		while(!platform_head_at_coords());
 
 	}
-		
+	
+	return true;	
 
 }
 
@@ -45,7 +54,7 @@ void draw_square(void) {
 //
 // Parameters:
 //      void
-void draw_circle(void) {
+bool draw_circle(void) {
 
 //	platform_init();
 //	platform_calibrate_head();
@@ -80,6 +89,8 @@ void draw_circle(void) {
 
 	}
 
+	return true;
+
 }
 
 
@@ -90,17 +101,19 @@ void draw_circle(void) {
 //
 // Parameters:
 //      void
-void test_vertical_axis(void) {
+bool test_vertical_axis(void) {
 
 //	platform_init();
 //	platform_calibrate_head();
 //	while(!platform_calibrated());
 
-	platform_head_set_coords(100,100,7000);
+	platform_head_set_coords(0,0,2000);
 	while(!platform_head_at_coords());
 
-	platform_head_set_coords(100,100,1000);
+	platform_head_set_coords(0,0,100);
 	while(!platform_head_at_coords());
+
+	return true;
 
 }
 
