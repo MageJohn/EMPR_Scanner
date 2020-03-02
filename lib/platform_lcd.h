@@ -1,5 +1,8 @@
 #include "lpc_types.h"
 
+#define LCD_TOP_LINE (0x00)
+#define LCD_BOTTOM_LINE (0x40)
+
 /*
   Minimum setup:
 
