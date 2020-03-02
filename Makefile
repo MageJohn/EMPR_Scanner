@@ -79,6 +79,8 @@ draw_mbed_deps := $(platform_deps) serial.o
 receive_data_deps := $(platform_deps) serial.o
 send_test_deps := $(platform_deps) serial.o transmit_data.a
 C1_deps := $(platform_deps) platform_lcd.a serial.o
+flag_detect_deps := $(platform_deps) serial.o
+scanning_test_deps := $(platform_deps) serial.o scanning.o platform_lcd.a
 
 STATIC_LIBS := 
 
