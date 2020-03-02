@@ -36,6 +36,7 @@ static struct MotorState y_state = {.soft_limit = Y_SOFT_LIMIT};
 static struct MotorState z_state = {.soft_limit = Z_SOFT_LIMIT};
 static uint32_t tick_start = 0;
 static uint16_t interval = DEFAULT_INTERVAL; 
+static uint8_t *limit_switch_led;
 
 /* ---------------------
  * Public functons
@@ -89,6 +90,7 @@ void motors_init(void) {
     x_state.led = leds_mux_register_source(X_LED);
     y_state.led = leds_mux_register_source(Y_LED);
     z_state.led = leds_mux_register_source(Z_LED);
+    limit_switch_led = leds_mux_register_source(LIM_SWITCH_LED);
 }
 
 
@@ -149,6 +151,7 @@ void update_limit_switches(void) {
     x_state.hard_limit = !(bool)(buttons & 0x2);
     y_state.hard_limit = !(bool)(buttons & 0x1);
     z_state.hard_limit = !(bool)(buttons & 0x4);
+    *limit_switch_led = x_state.hard_limit | y_state.hard_limit << 1 | z_state.hard_limit << 2;
 }
 
 void update_motor(struct MotorState *state) {

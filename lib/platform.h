@@ -13,6 +13,7 @@
 #define SENSOR_LED (LED_BASE + 6)
 #define I2C_LED (LED_BASE + 7)
 #define KP_LED (LED_BASE + 8)
+#define LIM_SWITCH_LED (LED_BASE + 9)
 
 // Axis limits
 #define X_SOFT_LIMIT 980
