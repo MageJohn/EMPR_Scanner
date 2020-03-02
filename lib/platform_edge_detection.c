@@ -26,6 +26,9 @@ bool y_flag = false;
 char data_to_screen[30];
 
 
+static void get_rgb_edges(void);
+
+
 void detect_edges(void) {
 
 	platform_calibrate_head();
@@ -97,7 +100,7 @@ void detect_edges(void) {
 
 void get_rgb_edges(void) {
 
-    platform_sensor_get_data(&rgb_buffer);
+    platform_sensor_get_data((uint16_t *)&rgb_buffer);
 
     uint16_t *p = (uint16_t *)&rgb_buffer;
 
