@@ -47,7 +47,7 @@ void scanning_scan_axis(int16_t *coords, uint8_t axis) {
     union ColourData cdata;
     int16_t pos[3] = {coords[X], coords[Y], cfg.z};
     for (; pos[axis] != state.stop[axis]; pos[axis] += state.step[axis]) {
-        platform_head_move_to(pos[X], pos[Y], pos[Z]);
+        platform_head_set_coords_and_wait(pos[X], pos[Y], pos[Z]);
         if (cfg.wait_for_sensor) {
             platform_sensor_wait_for_integration();
         }
@@ -108,5 +108,5 @@ static void calibrate(void) {
     if (cfg.cal_freqs[Y] > 0 && (coords[Y]/state.step[Y]) % cfg.cal_freqs[Y] == 0) {
         coords[Y] = -10;
     }
-    platform_head_move_to(coords[X], coords[Y], coords[Z]);
+    platform_head_set_coords_and_wait(coords[X], coords[Y], coords[Z]);
 }

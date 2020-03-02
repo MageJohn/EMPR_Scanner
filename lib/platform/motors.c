@@ -54,7 +54,7 @@ bool platform_head_at_coords(void) {
             z_state.coord == z_state.goal_coord);
 }
 
-void platform_head_move_to(int16_t x, int16_t y, int16_t z) {
+void platform_head_set_coords_and_wait(int16_t x, int16_t y, int16_t z) {
     platform_head_set_coords(x, y, z);
     while (!platform_head_at_coords());
 }

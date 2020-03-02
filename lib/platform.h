@@ -72,7 +72,7 @@ bool platform_head_at_coords(void);
 //
 // Parameters:
 //     uint16_t x, y, z: The coordinates to move to.
-void platform_head_move_to(int16_t x, int16_t y, int16_t z);
+void platform_head_set_coords_and_wait(int16_t x, int16_t y, int16_t z);
 
 // Start the calibration process for the head position. Once called, wait until
 // platform_calibrated returns true before calling other functions on the head. 
