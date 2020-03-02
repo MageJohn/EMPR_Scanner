@@ -12,5 +12,7 @@ uint32_t serial_write_b(char *buf, uint32_t length);
 
 bool serial_nb_write_finished(void);
 
+void serial_wait_for_byte(void);
+
 void serial_init(void);
 

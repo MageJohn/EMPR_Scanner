@@ -28,6 +28,11 @@ bool serial_nb_write_finished(void) {
     return (status == SET) ? false : true;
 }
 
+void serial_wait_for_byte(void) {
+    char byte;
+    serial_read_b(&byte, 1);
+}
+
 void serial_init(void) {
     UART_CFG_Type UARTConfigStruct;  // UART Configuration structure variable
     UART_FIFO_CFG_Type UARTFIFOConfigStruct; // UART FIFO configuration Struct variable
