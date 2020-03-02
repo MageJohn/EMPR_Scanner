@@ -14,9 +14,9 @@
 // Structs
 struct MotorState {
     uint8_t step;
-    uint16_t coord;
-    uint16_t goal_coord;
-    uint16_t soft_limit;
+    int16_t coord;
+    int16_t goal_coord;
+    int16_t soft_limit;
     bool hard_limit;
     bool calibrate;
     uint8_t *led;
@@ -41,7 +41,7 @@ static uint16_t interval = DEFAULT_INTERVAL;
  * Public functons
  * ---------------------*/
 
-void platform_head_set_coords(uint16_t x, uint16_t y, uint16_t z) {
+void platform_head_set_coords(int16_t x, int16_t y, int16_t z) {
     x_state.goal_coord = x > X_SOFT_LIMIT ? X_SOFT_LIMIT : x;
     y_state.goal_coord = y > Y_SOFT_LIMIT ? Y_SOFT_LIMIT : y;
     z_state.goal_coord = z > Z_SOFT_LIMIT ? Z_SOFT_LIMIT : z;
@@ -164,6 +164,7 @@ void update_motor(struct MotorState *state) {
             state->calibrate = false;
         }
         state->coord = 0;
+        state->goal_coord = 0;
         state->step = 4;
     } else if (state->coord >= state->soft_limit && direction > 0) {
         state->step = 4;
