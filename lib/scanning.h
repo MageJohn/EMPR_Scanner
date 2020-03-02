@@ -1,11 +1,6 @@
 #include <stdbool.h>
 #include "lpc_types.h"
 
-enum Axes {
-    X, Y, Z
-};
-
-
 // each array is x, y
 struct ScanningConfig {
     // The z height for all operations

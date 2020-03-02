@@ -1,11 +1,5 @@
-// ALL FUNCTIONS CLASS PRIVATE
+enum ManualUIDataDisplay {
+    UI_SHOW_RGB = 0, UI_SHOW_COORDS = !(UI_SHOW_RGB)
+};
 
-// Call manual_ui(void); to initialize everything.
-
-void move_axis_up(uint16_t *axis);
-void move_axis_down(uint16_t *axis);
-void manual_ui(void);
-void choosing_axis_info(void);
-void display_coordinates(void);
-void get_rgb_values(void);
-void display_rgb_values(void);
+void manual_ui(enum ManualUIDataDisplay mode);

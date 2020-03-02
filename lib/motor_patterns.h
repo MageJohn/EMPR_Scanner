@@ -1,11 +1,4 @@
 /*------------------------------
- * CONSTANTS
- *------------------------------*/
-
-#define Z_AXIS 4000
-#define PI 3.14159265	
-
-/*------------------------------
  * FUNCTIONS
  *------------------------------*/
 
@@ -18,7 +11,7 @@
 //
 // Parameters:
 //      void
-bool draw_square(void);
+void motor_patterns_square(void);
 
 
 // The stepper motors draw a circle
@@ -28,7 +21,7 @@ bool draw_square(void);
 //
 // Parameters:
 //      void
-bool draw_circle(void);
+void motor_patterns_circle(void);
 
 
 // Demonstrate the ability of platform to move up and down the z axis
@@ -38,4 +31,4 @@ bool draw_circle(void);
 //
 // Parameters:
 //      void
-bool test_vertical_axis(void);
+void motor_patterns_zdemo(void);
