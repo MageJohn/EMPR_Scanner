@@ -54,6 +54,11 @@ bool platform_head_at_coords(void) {
             z_state.coord == z_state.goal_coord);
 }
 
+void platform_head_move_to(int16_t x, int16_t y, int16_t z) {
+    platform_head_set_coords(x, y, z);
+    while (!platform_head_at_coords());
+}
+
 void platform_calibrate_head(void) {
     platform_head_set_coords(0, 0, 0);
 
@@ -76,7 +81,7 @@ void platform_motor_update_interval(uint16_t new_interval) {
     interval = new_interval;
 }
 
-void platform_head_get_coords(uint16_t *x, uint16_t *y, uint16_t *z) {
+void platform_head_get_position(int16_t *x, int16_t *y, int16_t *z) {
     *x = x_state.coord;
     *y = y_state.coord;
     *z = z_state.coord;

@@ -68,6 +68,12 @@ void platform_head_set_coords(int16_t x, int16_t y, int16_t z);
 //      bool: true if at the coordinates, false otherwise
 bool platform_head_at_coords(void);
 
+// Set the coordinates and then wait for the head to get to them.
+//
+// Parameters:
+//     uint16_t x, y, z: The coordinates to move to.
+void platform_head_move_to(int16_t x, int16_t y, int16_t z);
+
 // Start the calibration process for the head position. Once called, wait until
 // platform_calibrated returns true before calling other functions on the head. 
 void platform_calibrate_head(void);
@@ -86,12 +92,11 @@ bool platform_calibrated(void);
 //      uint16_t interval: the interval to use
 void platform_motor_update_interval(uint16_t new_interval);
 
-// Put the current coordinats into *x, *y, *z.
+// Put the current head position into the the pointers x, y, and z
 //
 // Parameters:
-//      uint16_t *x, *y, *z: Pointers to memory locations to put the coordinates
-//                           into
-void platform_head_get_coords(uint16_t *x, uint16_t *y, uint16_t *z);
+//     int16_t *x, *y, *z: These memory locations will be filled with the motor position.
+void platform_head_get_position(int16_t *x, int16_t *y, int16_t *z);
 
 // Copy the latest RGB sesnor data into the buffer passed.The buffer must have
 // enough space to contain 4 16 bit integers.
