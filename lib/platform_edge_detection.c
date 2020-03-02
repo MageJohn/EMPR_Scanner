@@ -30,7 +30,6 @@ char data_to_screen[30];
 
 static void get_rgb_edges(void);
 
-
 void detect_edges(void) {
 
 	platform_calibrate_head();
