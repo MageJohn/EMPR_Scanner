@@ -1,24 +1,15 @@
 #include <string.h>
 
 #include "platform.h"
-#include "platform_i2c.h"
+#include "platform/platform_i2c.h"
 #include "platform_lcd.h"
+
 
 #define LEN(x)  (sizeof(x) / sizeof((x)[0]))
 #define LCD_ADDR 0x3b
 #define DDRAM_SIZE 80
 
-// All functions assume that the IO board's I2C interface has been initialised
-// with the function platform_i2c_init()
 
-
-// Initialise the LCD display, ready for writing to
-//
-// Returns:
-//      void
-//
-// Parameters:
-//      void
 void platform_lcd_init(void) {
     uint8_t init_data[] = {
         Control_byte(0, 0),
@@ -45,16 +36,6 @@ void platform_lcd_init(void) {
 }
 
 
-// Clears the display
-//
-// Useful for the R character set, whose Clear_display function is broken
-// There is no need to wait for 165 clock cycles
-//
-// Returns:
-//      void
-//
-// Parameters:
-//      void
 void platform_lcd_clear_display(void) {
 
     I2C_M_SETUP_Type clear_packet = {
@@ -88,14 +69,6 @@ void platform_lcd_clear_display(void) {
 }
 
 
-// Transmit the data to the LCD display
-//
-// Returns:
-//      void
-//
-// Parameters:
-//      uint8_t *data: Pointer to the data to transmit
-//      uint32_t length: Length of the data to transmit
 void platform_lcd_send_bytes(uint8_t *data, uint32_t length) {
     I2C_M_SETUP_Type packet = {
         .sl_addr7bit = LCD_ADDR,
@@ -109,15 +82,6 @@ void platform_lcd_send_bytes(uint8_t *data, uint32_t length) {
 }
 
 
-// Write arbitrary bytes to the DDRAM
-//
-// Returns:
-//      void
-//
-// Parameters:
-//      uint8_t *bytes: Pointer to the byte array to write
-//      uint8_t length: Length of the byte array to write
-//      uint8_t ddram_addr: DDRAM address to write the bytes to
 void platform_lcd_write_bytes(uint8_t *bytes, uint8_t length, uint8_t ddram_addr) {
     I2C_M_SETUP_Type packet = {
         .sl_addr7bit = LCD_ADDR,
@@ -146,22 +110,6 @@ void platform_lcd_write_bytes(uint8_t *bytes, uint8_t length, uint8_t ddram_addr
 }
 
 
-// Write an ascii string to the display
-//
-// Takes a null terminated ascii string and translates it as closely as
-// possible into the character set of the display driver.  Not all ascii
-// characters are supported, and there is no support for the special characters
-// supported by the driver. Unsupported characters will be replaced with an
-// upside down ?. The advantage is that an ascii string literal can be passed.
-// The maximum length of the string is the size of the DDRAM, 80 characters,
-// and a longer string will be truncated.
-//
-// Returns:
-//      void
-//
-// Parameters:
-//      char *string: pointer to the null terminated string to write
-//      uint8_t ddram_addr: ddram address to start writing from
 void platform_lcd_write_ascii(char *string, uint8_t ddram_addr) {
     // 0xe0 is the upside down ?
     static const uint8_t ascii_to_charset[128] = { [0 ... 127] = 0xe0,

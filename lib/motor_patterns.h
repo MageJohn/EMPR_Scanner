@@ -1,7 +1,3 @@
-#include "platform.h"
-#include <math.h>
-#include "serial.h"
-
 /*------------------------------
  * CONSTANTS
  *------------------------------*/
@@ -18,28 +14,28 @@
 // The stepper motors draw a square following the borders of platform
 //
 // Returns:
-//      void
+//      true -- when finished
 //
 // Parameters:
 //      void
-void draw_square(void);
+bool draw_square(void);
 
 
 // The stepper motors draw a circle
 //
 // Returns:
-//      void
+//      true -- when finished
 //
 // Parameters:
 //      void
-void draw_circle(void);
+bool draw_circle(void);
 
 
 // Demonstrate the ability of platform to move up and down the z axis
 //
 // Returns:
-//      void
+//      true -- when finished
 //
 // Parameters:
 //      void
-void test_vertical_axis(void);
+bool test_vertical_axis(void);
