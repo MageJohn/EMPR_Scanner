@@ -1,7 +1,6 @@
 #include <string.h>
 #include "time.h"
 
-#include "leds.h"
 #include "platform.h"
 #include "sensor.h"
 
@@ -20,7 +19,6 @@
 // File private variables
 static uint8_t atime = 0xff;
 static bool enable;
-static struct LedSource *led;
 
 
 /*-------------------

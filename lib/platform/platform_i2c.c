@@ -12,7 +12,7 @@ static struct TransferLL {
     struct Transfer *tail;
 } transfer_ll;
 
-static struct LedSource *led;
+static uint8_t *led;
 
 #define TIMEOUT 500
 
@@ -118,7 +118,7 @@ void i2c_init(void) {
     transfer_ll.head = NULL;
     transfer_ll.tail = NULL;
 
-    led = led_mux_register_source(I2C_LED);
+    led = leds_mux_register_source(I2C_LED);
 }
 
 void i2c_tick(void) {
@@ -137,7 +137,7 @@ void i2c_tick(void) {
             current->status = status ? FINISHED : FAILED;
 
             // Blink an led when I2C transfers are happening
-            led->num ^= 2;
+            *led ^= 2;
         }
     }
 }
