@@ -19,6 +19,8 @@ uint16_t z;
 
 uint64_t rgb_buffer[1];
 
+char buffer[32];
+
 bool detection_completed = false;
 bool x_flag = true;
 bool y_flag = false;
@@ -105,8 +107,11 @@ void get_rgb_edges(void) {
     uint16_t *p = (uint16_t *)&rgb_buffer;
 
     // Convert from 16-bit raw data to 8-bit RGB representation
-    red = ((float)p[1]/65536)*255;
-    green = ((float)p[2]/65536)*255;
-    blue = ((float)p[3]/65536)*255;
+    red = ((float)p[1]/400)*255;
+    green = ((float)p[2]/400)*255;
+    blue = ((float)p[3]/400)*255;
+
+	sprintf(buffer, "%d, %d, %d \n\r", red, green, blue);
+	serial_write_b(buffer, 32);
 
 }

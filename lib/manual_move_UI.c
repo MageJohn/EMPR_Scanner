@@ -192,9 +192,9 @@ void get_rgb_values() {
     uint16_t *p = (uint16_t *)&rgb_buffer;
 
     // Convert from 16-bit raw data to 8-bit RGB representation
-    red_display = ((float)p[1]/65536)*255;
-    green_display = ((float)p[2]/65536)*255;
-    blue_display = ((float)p[3]/65536)*255;
+    red_display = ((float)p[1]/700)*255;
+    green_display = ((float)p[2]/700)*255;
+    blue_display = ((float)p[3]/700)*255;
 
 }
 

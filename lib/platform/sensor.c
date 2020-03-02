@@ -78,3 +78,4 @@ void sensor_init(void){
     // Ensure power on process is complete before continuing.
     wait_us(2400);
 }
+}
