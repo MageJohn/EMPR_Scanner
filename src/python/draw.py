@@ -23,23 +23,21 @@ def next_pixel(pixel, image_array):
     x_at = pixel[0]
     y_at = pixel[1]
     
-    if x_at == len(image_array - 1) or y_at == len(image_array[0] - 1):
+    if x_at == len(image_array) - 1 or y_at == len(image_array[0]) -1:
         return 0
-    elif image_array[x_at][y_at - 1] > 0:
-        return x_at, y_at - 1
-    elif image_array[x_at][y_at + 1] > 0:
-        return x_at, y_at + 1
-    elif image_array[x_at - 1][y_at] > 0:
-        return x_at - 1, y_at
     elif image_array[x_at + 1][y_at] > 0:
         return x_at + 1, y_at
+    elif image_array[x_at + 1][y_at + 1] > 0:
+        return x_at + 1, y_at + 1
+    elif image_array[x_at][y_at + 1] > 0:
+        return x_at, y_at + 1
     else:
         return 0
 
 
 class Move:
     def __init__(self):
-        self.z = 1100
+        self.z = 600
         self.pixel = (0, 0)
 
     def move(self, pixel):
@@ -47,11 +45,11 @@ class Move:
         return self._create_cmd()
 
     def up(self):
-        self.z = 1500
+        self.z = 1000
         return self._create_cmd()
 
     def down(self):
-        self.z = 1100
+        self.z = 600
         return self._create_cmd()
 
     def _create_cmd(self):
@@ -84,6 +82,17 @@ def generate_control_sequence(image_array):
             
     return sequence
 
+def edit_control_sequence(sequence, tolerance, up_val):
+    sequence_string = ""
+    sub_string = "d" * tolerance
+    for move in sequence:
+        if move[2] == up_val:
+            sequence_string += "u"
+        else:
+            sequence_string += "d"
+    out = sequence_string.replace(sub_string, "x")
+    return out, sequence_string
+
 def send_control_sequence(movements, ser):
     send_sequence = []
     for moves in movements:
@@ -96,7 +105,7 @@ def send_control_sequence(movements, ser):
 
 
 if __name__ == "__main__":
-    ser = Serial("/dev/ttyACM0", 9600)
+    #ser = Serial("/dev/ttyACM0", 9600)
     img = Image.open("refactored.png")
     x = np.array(img, dtype="uint8")
     for r in range(len(x)):
@@ -107,17 +116,15 @@ if __name__ == "__main__":
                 x[r][c] = 0
 
     seq = generate_control_sequence(x)
-    send_control_sequence(seq, ser)
+    print(edit_control_sequence(seq,4,1000))
+    #send_control_sequence(seq, ser)
     
     """
     for instruction in seq:
-        if instruction == "down":
+        setpos(instruction[0],instruction[1])
+        if instruction[2] == 600:
             pd()
-        elif instruction == "up":
+        elif instruction[2] == 1000:
             pu()
-        else:
-            if type(instruction[0]) is not int or type(instruction[1]) is not int:
-                print(instruction)
-            setpos(instruction[0],instruction[1])
     done()
     """
