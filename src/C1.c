@@ -5,12 +5,12 @@
 uint16_t colour[4];
 
 #define THRESHOLD 300
-#define TOLERANCE 0.2
-#define X_CENTRE 490
-#define Y_CENTRE 425
-#define Z 100
+#define TOLERANCE 0.15
+#define X_CENTRE 450
+#define Y_CENTRE 625
+#define Z 300
 #define X_STEP 300
-#define Y_STEP 300
+#define Y_STEP 175
 
 enum Countries {
     FRANCE, CZECHIA, BULGARIA, SUDAN, BURUNDI, BURKINO_FASO, UK, SYRIA, BELARUS,
@@ -37,7 +37,7 @@ uint16_t min(float num1, float num2) {
 int shade(float red, float green, float blue, float tolerance) {
     uint16_t largest = max(max(red, green), blue);
     uint16_t smallest = min(min(red, green), blue);
-    if (smallest + smallest*tolerance >= largest) {
+    if ((smallest + smallest*tolerance) >= largest) {
         return 1;
     }
     return 0;
@@ -50,6 +50,18 @@ char raw_data_to_char(uint16_t *colours) {
     float blue = colours[3];
 
     float largest = max(max(red, green), blue);
+    float smallest = min(min(red, green), blue);
+    float second;
+
+    if ((red == largest && green == smallest) || (green == largest && red== smallest)) {
+        second = blue;
+    }
+    else if ((green == largest && blue == smallest) || (blue == largest && green == smallest)) {
+        second = red;
+    }
+    else {
+        second = green;
+    }
 
     if(shade(red, green, blue, TOLERANCE)) {
         if(clear >= THRESHOLD) {
@@ -57,6 +69,14 @@ char raw_data_to_char(uint16_t *colours) {
             return 'w';
         }
         return 'k';
+    }
+
+    else if (((red == largest) && (green * 1.2 >= red) || (green == largest) && (red * 1.2 >= green)) && (blue * 1.5 >= largest)) {
+        return 'k';
+    }
+
+    else if((red == largest) && (green * 1.2 >= red) || (green == largest) && (red * 1.2 >= green)) {
+        return 'u';
     }
 
     else if(red == largest) {
