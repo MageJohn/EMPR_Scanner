@@ -76,6 +76,8 @@ lcd_test_deps := $(platform_deps) platform_lcd.a serial.o
 keypad_test_deps := $(platform_deps) platform_keypad.a
 user_interface_deps := $(platform_deps) platform_keypad.a platform_lcd.a serial.o manual_move_UI.o motor_patterns_UI.o motor_patterns.o platform_edge_detection.o
 draw_mbed_deps := $(platform_deps) serial.o
+receive_data_deps := $(platform_deps) serial.o
+send_test_deps := $(platform_deps) serial.o transmit_data.a
 C1_deps := $(platform_deps) platform_lcd.a serial.o
 
 STATIC_LIBS := 
