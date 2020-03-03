@@ -1,3 +1,5 @@
+#include <stdarg.h>
+#include <stdio.h>
 #include "lpc17xx_uart.h"
 #include "lpc17xx_pinsel.h"
 
@@ -21,6 +23,21 @@ uint32_t serial_write_nb(char *buf, uint32_t length) {
 
 uint32_t serial_write_b(char *buf, uint32_t length) {
     return(UART_Send((LPC_UART_TypeDef *)LPC_UART0, (uint8_t *)buf, length, BLOCKING));
+}
+
+uint32_t serial_printf(char const *format, ...) {
+    va_list args;
+    char buf[SERIAL_MAX_STR_LEN];
+
+    va_start(args, format);
+    int length = vsnprintf(buf, SERIAL_MAX_STR_LEN, format, args);
+    va_end(args);
+
+    if (length > 0) {
+        return serial_write_b(buf, length);
+    } else {
+        return -1;
+    }
 }
 
 bool serial_nb_write_finished(void) {
