@@ -1,3 +1,5 @@
+#include <stdio.h>
+#include <stdarg.h>
 #include <string.h>
 
 #include "platform.h"
@@ -155,4 +157,18 @@ void platform_lcd_write_ascii(char *string, uint8_t ddram_addr) {
     packet.tx_data = data;
     packet.tx_length = n+1;
     platform_i2c_transfer_blocking(&packet);
+}
+
+uint32_t platform_lcd_printf(uint8_t ddram_addr, char const *format, ...) {
+    va_list args;
+    char buf[16];
+
+    va_start(args, format);
+    int length = vsnprintf(buf, 16, format, args);
+    va_end(args);
+
+    if (length > 0) {
+        platform_lcd_write_ascii(buf, ddram_addr);
+    }
+    return length;
 }
