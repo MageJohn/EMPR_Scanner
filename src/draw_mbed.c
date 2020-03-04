@@ -1,7 +1,7 @@
 /* The draw function will always be given an image of 200x200 to draw. 
    To make this centered, we will 
 */
-
+#include "scanning.h"
 #include "platform.h"
 #include "time.h"
 #include <stdlib.h>
@@ -19,11 +19,31 @@ void main(void) {
     platform_init();
     serial_init();
 
+    struct ScanningConfig cfg = {
+        .z = 40,
+        .start = {200, 350},
+        .size = {750, 500},
+        .res = {75, 50},
+        .cal_freqs = {0, 1},
+        .wait_for_sensor = false,
+        .send_data = true,
+        .show_lcd = false,
+    };
+
+    platform_calibrate_head();
+    while(!platform_calibrated());
+
+    scanning_setup(&cfg);
+    serial_wait_for_byte();
+    scanning_raster(X, Y);
+
     platform_calibrate_head();
     while(!platform_calibrated());
 
     platform_head_set_coords(0,0,1000);
     while(!platform_head_at_coords());
+
+    serial_wait_for_byte();
 
     while (true) {
 

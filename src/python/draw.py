@@ -8,8 +8,30 @@ from pprint import pprint
 from struct import pack
 from serial import Serial
 import time
-from turtle import *
 from struct import pack, unpack
+
+def auto_canny(image, sigma = 0.33):
+    v = np.median(image)
+    lower = int(max(0, (1.0 - sigma) * v))
+    upper = int(min(255, (1.0 + sigma) * v))
+    edged = cv2.Canny(image, lower, upper)
+
+    dim = (50,50)
+    resized = cv2.resize(image, dim, interpolation=cv2.INTER_AREA)
+    cv2.imwrite("edged.png", resized)
+
+    img = Image.open("edged.png")
+    x = np.array(img, dtype="uint8")
+
+    for r in range(len(x)):
+        for c in range(len(x[0])):
+            if x[r][c] > 0:
+                x[r][c] = 255
+            else:
+                x[r][c] = 0
+
+    s = Image.fromarray(x)
+    s.save("refactored.png")
 
 def locate_pixel_start(image_array):
     for r in range(len(image_array)):
@@ -37,7 +59,7 @@ def next_pixel(pixel, image_array):
 
 class Move:
     def __init__(self):
-        self.z = 600
+        self.z = 400
         self.pixel = (0, 0)
 
     def move(self, pixel):
@@ -49,7 +71,7 @@ class Move:
         return self._create_cmd()
 
     def down(self):
-        self.z = 600
+        self.z = 400
         return self._create_cmd()
 
     def _create_cmd(self):
@@ -90,8 +112,13 @@ def edit_control_sequence(sequence, tolerance, up_val):
             sequence_string += "u"
         else:
             sequence_string += "d"
-    out = sequence_string.replace(sub_string, "x")
-    return out, sequence_string
+    replacement = "x" * tolerance
+    out = sequence_string.replace(sub_string, replacement)
+    new_sequence = []
+    for i in range(len(sequence)):
+        if out[i] != "d":
+            new_sequence.append(sequence[i])
+    return new_sequence
 
 def send_control_sequence(movements, ser):
     send_sequence = []
@@ -103,11 +130,8 @@ def send_control_sequence(movements, ser):
         ser.write(seq)
         a = ser.read(1)
 
-
-if __name__ == "__main__":
-    #ser = Serial("/dev/ttyACM0", 9600)
-    img = Image.open("refactored.png")
-    x = np.array(img, dtype="uint8")
+def contrast_image(image_array):
+    x = image_array
     for r in range(len(x)):
         for c in range(len(x[0])):
             if x[r][c] > 0:
@@ -115,16 +139,15 @@ if __name__ == "__main__":
             else:
                 x[r][c] = 0
 
+    return x
+
+if __name__ == "__main__":
+    ser = Serial("/dev/ttyACM0", 9600)
+    # call autocanny on scanned image
+    #auto_canny(image, sigma = 0.33)
+    img = Image.open("refactored.png")
+    x = np.array(img, dtype="uint8")
+    x = contrast_image(x)
     seq = generate_control_sequence(x)
-    print(edit_control_sequence(seq,4,1000))
-    #send_control_sequence(seq, ser)
-    
-    """
-    for instruction in seq:
-        setpos(instruction[0],instruction[1])
-        if instruction[2] == 600:
-            pd()
-        elif instruction[2] == 1000:
-            pu()
-    done()
-    """
+    new_seq = edit_control_sequence(seq,4,1000)
+    send_control_sequence(new_seq, ser)
