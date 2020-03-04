@@ -34,6 +34,11 @@ enum I2C_Status {
     FAILED,
 };
 
+enum Axes {
+    X, Y, Z
+};
+
+
 // A union which helps convert between a 16 bit int and two 8 bit bytes
 union ColourData {
     uint16_t combined[4];

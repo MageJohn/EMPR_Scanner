@@ -1,17 +1,16 @@
 /*
 
-This is second part of A1, the actual file for
-drawing and making the patterns.
+  This is second part of A1, the actual file for
+  drawing and making the patterns.
 
 */
 
-#include "platform.h"
 #include <math.h>
+
+#include "platform.h"
 #include "serial.h"
 
 #define Z_AXIS 400
-#define PI 3.14159265	
-
 
 // THE FUNCTIONS ASSUME THAT PLATFORM HAS BEEN INITIALIZED AND CALIBRATED
 // BY USING: platform_init(); --> platform_calibrate_head(); --> while(!platform_calibrated()); !
@@ -23,27 +22,16 @@ drawing and making the patterns.
 //
 // Parameters:
 //      void
-bool draw_square(void) {
-	
-	uint16_t x_coords[5] = {50, 950, 950, 50, 50};
-	uint16_t y_coords[5] = {50, 50, 950, 950, 50};
+void motor_patterns_square(void) {
 
-//	platform_init();
-//	platform_calibrate_head();
-//	while(!platform_calibrated());
+    uint16_t x_coords[5] = {50, 950, 950, 50, 50};
+    uint16_t y_coords[5] = {50, 50, 950, 950, 50};
 
-
-	// Make a square
-	int i;
-	for (i = 0; i<5; i++) {
-
-		platform_head_set_coords(x_coords[i],y_coords[i],Z_AXIS);
-		while(!platform_head_at_coords());
-
-	}
-	
-	return true;	
-
+    // Make a square
+    int i;
+    for (i = 0; i < 5; i++) {
+        platform_head_set_coords_and_wait(x_coords[i], y_coords[i], Z_AXIS);
+    }
 }
 
 
@@ -54,43 +42,23 @@ bool draw_square(void) {
 //
 // Parameters:
 //      void
-bool draw_circle(void) {
+void motor_patterns_circle(void) {
+    double step_size = M_PI / 18;
+    double radius = 400;
+    int16_t center[] = {450, 450};
 
-//	platform_init();
-//	platform_calibrate_head();
-//	while(!platform_calibrated());
+    double angle = 0;
+    int16_t pos[2];
 
-	uint16_t angle = 0;
-	uint16_t radius = 400;
-	uint16_t x_center = 450;
-	uint16_t y_center = 450;
-	uint16_t step_size = 5;	// Decreasing this, will produce more coordinates for platform.
-	uint16_t x;
-	uint16_t y;
-	double sin_degrees;
-	double cos_degrees;
-	double val = PI/180;
+    // Make a circle
+    for (angle = 0; angle < 2*M_PI; angle += step_size) {
+        // get x and y and convert from radians to degrees
 
-	// Make a circle
-	while (angle < 360) {
+        pos[0] = (int16_t)(cos(angle) * radius) + center[0];
+        pos[1] = (int16_t)(sin(angle) * radius) + center[1];
 
-		// get x and y and convert from radians to degrees
-
-		sin_degrees = sin(angle*val);
-		cos_degrees = cos(angle*val);		
-
-		x = x_center + (int)(radius * cos_degrees);
-		y = y_center + (int)(radius * sin_degrees);
-
-		platform_head_set_coords(x,y,Z_AXIS);
-		while(!platform_head_at_coords());
-
-		angle += step_size;
-
-	}
-
-	return true;
-
+        platform_head_set_coords_and_wait(pos[0], pos[1], Z_AXIS);
+    }
 }
 
 
@@ -101,20 +69,9 @@ bool draw_circle(void) {
 //
 // Parameters:
 //      void
-bool test_vertical_axis(void) {
-
-//	platform_init();
-//	platform_calibrate_head();
-//	while(!platform_calibrated());
-
-	platform_head_set_coords(0,0,2000);
-	while(!platform_head_at_coords());
-
-	platform_head_set_coords(0,0,100);
-	while(!platform_head_at_coords());
-
-	return true;
-
+void motor_patterns_zdemo(void) {
+    platform_head_set_coords_and_wait(0,0,2000);
+    platform_head_set_coords_and_wait(0,0,100);
 }
 
 

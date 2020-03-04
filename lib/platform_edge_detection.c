@@ -1,122 +1,71 @@
 /*
-
-This is A2, detects edges and sets limits.
-
+  This is A2, detects edges and sets limits.
 */
 
-#include <string.h>
-#include <stdio.h>
+#include <stdlib.h>
 
 #include "platform_lcd.h"
 #include "serial.h"
-#include "time.h"
 #include "platform.h"
 
-uint16_t platform_x_edge;
-uint16_t platform_y_edge;
+#define THRESHOLD 10
+#define SEARCH_STEP 5
+#define Z_HEIGHT 500
 
-uint8_t red;
-uint8_t blue;
-uint8_t green;
-
-uint16_t x;
-uint16_t y;
-uint16_t z;
-
-uint64_t rgb_buffer[1];
-
-char buffer[32];
-
-bool detection_completed = false;
-bool x_flag = true;
-bool y_flag = false;
-
-char data_to_screen[30];
-
-
-static void get_rgb_edges(void);
+static void find_edge(int16_t *coords, uint8_t axis, int16_t step, int16_t stop);
 
 void detect_edges(void) {
-
-	platform_calibrate_head();
-	while(!platform_calibrated());
-
-    platform_head_set_coords(300,300,0);
-    while(!platform_head_at_coords());
-
-    // A delay for RGB sensor
-    wait_ms(400);
-
-    platform_lcd_clear_display();
-    strcpy(data_to_screen, "Detecting");
-    platform_lcd_write_ascii(data_to_screen,0);
-    strcpy(data_to_screen, "edges");
-    platform_lcd_write_ascii(data_to_screen,64);
-
-    while(!detection_completed) {
-
-        get_rgb_edges();
-
-        platform_head_get_coords(&x, &y, &z);
-
-        if (x_flag && red > 2 && blue > 2 && green > 2) {
-
-            platform_head_set_coords(2000, y, z);
-
-        } else if (x_flag && red <= 2 && blue <= 2 && green <= 2) {
-
-            platform_x_edge = x;
-            x_flag = false;
-            y_flag = true;
-            platform_head_set_coords(300,300,0);
-            while(!platform_head_at_coords());
-
-        } else if (y_flag && red > 2 && blue > 2 && green > 2) {
-
-            platform_head_set_coords(x, 0, z);
-
-        } else if (y_flag && red <= 2 && blue <= 2 && green <= 2) {
-
-            platform_y_edge = Y_SOFT_LIMIT;
-            y_flag = false;
-            detection_completed = true;
-
-        }
-
-    }
-
-    platform_lcd_clear_display();
-    strcpy(data_to_screen, "Edges:");
-    platform_lcd_write_ascii(data_to_screen, 0);
-
-    strcpy(data_to_screen, "X: 980  Y: 860");
-    platform_lcd_write_ascii(data_to_screen, 64);
-
-    // Cleanup
-    red = 10;
-    green = 10;
-    blue = 10;
-    detection_completed = false;
-    x_flag = true;
+    int16_t corners[2][2] = {{0, 0}, {X_SOFT_LIMIT - 10, Y_SOFT_LIMIT - 10}};
 
     platform_calibrate_head();
-	while(!platform_calibrated());
 
+    platform_lcd_clear_display();
+    platform_lcd_write_ascii("Bottom corner", LCD_TOP_LINE);
+
+    while(!platform_calibrated());
+
+    find_edge(corners[0], X, SEARCH_STEP, X_SOFT_LIMIT / 10);
+    find_edge(corners[0], Y, SEARCH_STEP, Y_SOFT_LIMIT / 10);
+
+    platform_calibrate_head();
+
+    platform_lcd_printf(LCD_TOP_LINE, "%.3u %.3u           ",
+                        corners[0][X], corners[0][Y]);
+    platform_lcd_write_ascii("Top corner", LCD_BOTTOM_LINE);
+
+    while(!platform_calibrated());
+
+    find_edge(corners[1], X, SEARCH_STEP, X_SOFT_LIMIT);
+    find_edge(corners[1], Y, SEARCH_STEP, Y_SOFT_LIMIT);
+
+    platform_lcd_printf(LCD_BOTTOM_LINE, "%.3u %.3u        ",
+                        corners[1][X], corners[1][Y]);
 }
 
 
-void get_rgb_edges(void) {
+static void find_edge(int16_t *coords, uint8_t axis, int16_t step, int16_t stop) {
+    int16_t pos[2] = {X_SOFT_LIMIT / 2, Y_SOFT_LIMIT / 2};
+    uint16_t crgb[4];
+    int16_t this_c;
+    int16_t last_c;
 
-    platform_sensor_get_data((uint16_t *)&rgb_buffer);
+    pos[axis] = coords[axis];
+    platform_head_set_coords_and_wait(pos[0], pos[1], Z_HEIGHT);
 
-    uint16_t *p = (uint16_t *)&rgb_buffer;
+    platform_sensor_get_data(crgb);
+    last_c = crgb[0];
 
-    // Convert from 16-bit raw data to 8-bit RGB representation
-    red = ((float)p[1]/400)*255;
-    green = ((float)p[2]/400)*255;
-    blue = ((float)p[3]/400)*255;
+    for (; pos[axis] < stop; pos[axis] += step) {
+        platform_head_set_coords_and_wait(pos[0], pos[1], Z_HEIGHT);
 
-	sprintf(buffer, "%d, %d, %d \n\r", red, green, blue);
-	serial_write_b(buffer, 32);
+        platform_sensor_get_data(crgb);
+        this_c = crgb[0];
+        if (abs(last_c - this_c) > THRESHOLD) {
+            break;
+        }
 
+        last_c = this_c;
+    }
+
+    coords[axis] = pos[axis];
 }
