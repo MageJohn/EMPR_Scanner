@@ -9,6 +9,7 @@ from struct import pack
 from serial import Serial
 import time
 from struct import pack, unpack
+from processing import DataProcessing, parser as dp_parser
 
 def auto_canny(image, sigma = 0.33):
     v = np.median(image)
@@ -17,7 +18,7 @@ def auto_canny(image, sigma = 0.33):
     edged = cv2.Canny(image, lower, upper)
 
     dim = (50,50)
-    resized = cv2.resize(image, dim, interpolation=cv2.INTER_AREA)
+    resized = cv2.resize(edged, dim, interpolation=cv2.INTER_AREA)
     cv2.imwrite("edged.png", resized)
 
     img = Image.open("edged.png")
@@ -134,20 +135,29 @@ def contrast_image(image_array):
     x = image_array
     for r in range(len(x)):
         for c in range(len(x[0])):
-            if x[r][c] > 0:
-                x[r][c] = 255
-            else:
+            if x[r][c] < 255:
                 x[r][c] = 0
+            else:
+                x[r][c] = 255
 
     return x
 
 if __name__ == "__main__":
     ser = Serial("/dev/ttyACM0", 9600)
-    # call autocanny on scanned image
-    #auto_canny(image, sigma = 0.33)
+    dp = DataProcessing(ser)
+    ser.write(1)
+    dp.get_size()
+    print(dp.size)
+    image_array = dp.read_into_array("image")
+    
+    cv2.imwrite("scanned.png", image_array)
+    im = cv2.imread("scanned.png")
+    
+    auto_canny(im, sigma = 0.33)
     img = Image.open("refactored.png")
     x = np.array(img, dtype="uint8")
-    x = contrast_image(x)
     seq = generate_control_sequence(x)
     new_seq = edit_control_sequence(seq,4,1000)
+    inp = input("Press any key when pencil is in place: ")
+    ser.write(1)
     send_control_sequence(new_seq, ser)

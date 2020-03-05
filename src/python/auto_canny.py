@@ -12,20 +12,9 @@ def auto_canny(image, sigma = 0.33):
     upper = int(min(255, (1.0 + sigma) * v))
     edged = cv2.Canny(image, lower, upper)
 
-    return edged
-
-if __name__ == "__main__":
-    im = cv2.imread("face.png")
-    #dim = (1000,1000)
-    #resized = cv2.resize(im, dim, interpolation=cv2.INTER_AREA)
-    image = auto_canny(im)
     dim = (50,50)
-    resized = cv2.resize(image, dim, interpolation=cv2.INTER_AREA)
+    resized = cv2.resize(edged, dim, interpolation=cv2.INTER_AREA)
     cv2.imwrite("edged.png", resized)
-
-    im = misc.imread("edged.png")
-    print(im.shape)
-    print(im.dtype)
 
     img = Image.open("edged.png")
     x = np.array(img, dtype="uint8")
@@ -37,6 +26,9 @@ if __name__ == "__main__":
             else:
                 x[r][c] = 0
 
-    pprint(x)
     s = Image.fromarray(x)
     s.save("refactored.png")
+
+if __name__ == "__main__":
+    im = cv2.imread("face.png")
+    auto_canny(im)

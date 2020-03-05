@@ -11,7 +11,7 @@ import io
 
 
 class DataProcessing:
-    def __init__(self, ser, gamma, integ_cycles=1, output=None, track=False):
+    def __init__(self, ser, gamma=3.0, integ_cycles=1, output=None, track=False):
         self.ser = ser
         self.absolute_max = integ_cycles * 1024
         self.gamma = gamma
@@ -80,7 +80,7 @@ parser = argparse.ArgumentParser(description="Read data from serial, save the ra
                                  formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument("--from-file", '-f', type=argparse.FileType('rb'),
                     help="A file to read data from instead of the serial")
-parser.add_argument('--raw-out', '-r', default=f'data/{_timestamp}.raw',
+parser.add_argument('--raw-out', '-r', default=f'data/ self.size = unpack("<2H", size){_timestamp}.raw',
                     help="The file to write the raw bytes to as they're read.\
                     This file is not used if --from-file is specified.")
 parser.add_argument('--image-out', default=os.path.expanduser(f'~/Pictures/Flag{_timestamp}.png'),

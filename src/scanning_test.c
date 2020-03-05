@@ -20,7 +20,7 @@ void main(void) {
     while(!platform_calibrated());
 
     serial_init();
-    serial_wait_for_byte();
+    //serial_wait_for_byte();
     scanning_setup(&cfg);
     scanning_raster(X, Y);
 }

@@ -22,8 +22,8 @@ void main(void) {
     struct ScanningConfig cfg = {
         .z = 40,
         .start = {200, 350},
-        .size = {750, 500},
-        .res = {75, 50},
+        .size = {650, 500},
+        .res = {50, 50},
         .cal_freqs = {0, 1},
         .wait_for_sensor = false,
         .send_data = true,
@@ -35,6 +35,7 @@ void main(void) {
 
     scanning_setup(&cfg);
     serial_wait_for_byte();
+    serial_write_b((char *)cfg.res, sizeof(uint16_t)*2);
     scanning_raster(X, Y);
 
     platform_calibrate_head();
