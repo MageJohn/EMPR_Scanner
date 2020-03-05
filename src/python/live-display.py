@@ -44,7 +44,7 @@ class Scanner(Thread):
                 try:
                     pix = self.dp.read_pixel()
                     array.flat[i] = int.from_bytes(
-                        pack("3B", *self.dp.raw_to_rgb(pix, self.args.max_type)), "big"
+                        pack("3B", *self.dp.raw_to_rgb(pix, 'absolute')), "big"
                     )
                     sdl2.SDL_PushEvent(ctypes.byref(self.event))
                 except io.BlockingIOError:
