@@ -13,6 +13,7 @@
 #define SENSOR_LED (LED_BASE + 6)
 #define I2C_LED (LED_BASE + 7)
 #define KP_LED (LED_BASE + 8)
+#define LIM_SWITCH_LED (LED_BASE + 9)
 
 // Axis limits
 #define X_SOFT_LIMIT 980
@@ -33,6 +34,11 @@ enum I2C_Status {
     FAILED,
 };
 
+enum Axes {
+    X, Y, Z
+};
+
+
 // A union which helps convert between a 16 bit int and two 8 bit bytes
 union ColourData {
     uint16_t combined[4];
@@ -51,15 +57,27 @@ void platform_init(void);
 
 // Call to have the head go to coordinates x, y, z
 //
+// The coordinates system has (0, 0, 0) at the place where the limit switches
+// are active. The platforms movement can be quite inaccurate however, and so
+// this point can drift. Setting a coordinate to a large negative number would
+// ensure that the switch is reached, at which point that axis is calibrated
+// again.
+//
 // Parameters:
 //      uint16_t x, y, z: The coordinate to move to.
-void platform_head_set_coords(uint16_t x, uint16_t y, uint16_t z);
+void platform_head_set_coords(int16_t x, int16_t y, int16_t z);
 
 // Whether the head is at the coordinates set by platform_head_set_coords.
 //
 // Returns:
 //      bool: true if at the coordinates, false otherwise
 bool platform_head_at_coords(void);
+
+// Set the coordinates and then wait for the head to get to them.
+//
+// Parameters:
+//     uint16_t x, y, z: The coordinates to move to.
+void platform_head_set_coords_and_wait(int16_t x, int16_t y, int16_t z);
 
 // Start the calibration process for the head position. Once called, wait until
 // platform_calibrated returns true before calling other functions on the head. 
@@ -79,12 +97,11 @@ bool platform_calibrated(void);
 //      uint16_t interval: the interval to use
 void platform_motor_update_interval(uint16_t new_interval);
 
-// Put the current coordinats into *x, *y, *z.
+// Put the current head position into the the pointers x, y, and z
 //
 // Parameters:
-//      uint16_t *x, *y, *z: Pointers to memory locations to put the coordinates
-//                           into
-void platform_head_get_coords(uint16_t *x, uint16_t *y, uint16_t *z);
+//     int16_t *x, *y, *z: These memory locations will be filled with the motor position.
+void platform_head_get_position(int16_t *x, int16_t *y, int16_t *z);
 
 // Copy the latest RGB sesnor data into the buffer passed.The buffer must have
 // enough space to contain 4 16 bit integers.
@@ -106,6 +123,9 @@ void platform_sensor_set_gain(enum SensorGain gain);
 // cycles.
 void platform_sensor_set_integ_cycles(uint8_t cycles);
 
+// Get the number of integration cycles for the chip.
+uint8_t platform_sensor_get_integ_cycles(void);
+
 /*
   Schedule an I2C transfer and block until completion.
 
@@ -116,6 +136,11 @@ void platform_sensor_set_integ_cycles(uint8_t cycles);
     ERROR if the transfer failed
 */
 Status platform_i2c_transfer_blocking(I2C_M_SETUP_Type *packet);
+
+/*
+  Wait for a an integration cycle to fully run
+*/
+void platform_sensor_wait_for_integration(void);
 
 /*
   Adds a new I2C transfer to be completed.

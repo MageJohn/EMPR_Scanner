@@ -69,12 +69,20 @@ stop_motors_deps := ioboard.a
 struct_test_deps := serial.o
 led_mux_test_deps := leds.a time.o
 rgb_sensor_test_deps := ioboard.a time.o serial.o
-raster_scan_B2_deps := $(platform_deps)
+raster_scan_B2_deps := $(platform_deps) serial.o
 lib_sensor_test_deps := $(platform_deps) serial.o
 UI_test_deps := $(platform_deps) serial.o ioboard.a
 lcd_test_deps := $(platform_deps) platform_lcd.a serial.o
 keypad_test_deps := $(platform_deps) platform_keypad.a
 user_interface_deps := $(platform_deps) platform_keypad.a platform_lcd.a serial.o manual_move_UI.o motor_patterns_UI.o motor_patterns.o platform_edge_detection.o
+draw_mbed_deps := $(platform_deps) serial.o scanning.o platform_lcd.a
+receive_data_deps := $(platform_deps) serial.o
+transmit_data_D1_deps := $(platform_deps) serial.o
+send_test_D1_deps := $(platform_deps) serial.o transmit_data_D1.o
+C1_deps := $(platform_deps) platform_lcd.a serial.o
+flag_detect_deps := $(platform_deps) serial.o
+scanning_test_deps := $(platform_deps) serial.o scanning.o platform_lcd.a
+printf_test_deps := $(platform_deps) platform_lcd.a
 
 STATIC_LIBS := 
 

@@ -1,5 +1,8 @@
 #include "lpc_types.h"
 
+#define LCD_TOP_LINE (0x00)
+#define LCD_BOTTOM_LINE (0x40)
+
 /*
   Minimum setup:
 
@@ -86,6 +89,26 @@ Parameters:
      uint8_t ddram_addr: ddram address to start writing from
 */
 void platform_lcd_write_ascii(char *string, uint8_t ddram_addr);
+
+/*
+  Write the C string pointed to by format to the lcd display, using
+  platform_lcd_write_ascii internally. If format includes format specifiers
+  like printf, then the additional arguments following format are formatted and
+  inserted in the string.
+
+  Returns:
+      On success, the number of characters written if the display had enough space.
+
+      If an encoding error occurs, a negative number is returned.
+
+  Parameters:
+      ddram_addr: The ddram address to write to (which is effectively the position
+                  on the display).
+      format:     A C string that contains a format string that follows the same
+                  specification as printf.
+      ...:        Additional arguments, depending on the format string.
+*/
+uint32_t platform_lcd_printf(uint8_t ddram_addr, char const *format, ...);
 
 
 /*------------------------------

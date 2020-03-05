@@ -1,68 +1,51 @@
-#include <stdio.h>
-#include <string.h>
+/*
+This is part one of A1, this file combines all patters mentioned in A1
+and lets the user choose between them.
+*/
 
-#include "ioboard.h"
-#include "serial.h"
 #include "platform.h"
 #include "platform_lcd.h"
 #include "platform_keypad.h"
 #include "motor_patterns.h"
 #include "time.h"
 
-bool exit_condition_motor;
-uint8_t pressed_key;
-char data_to_screen[32];
-
-
-void select_test(void);
-void text_select_test(void);
+static void text_select_test(void);
 
 void select_test(void) {
+    bool key_pressed;
+    uint8_t pressed_key;
+    bool exit_condition = false;
 
     text_select_test();
-    pressed_key = 30;
-    exit_condition_motor = false;
 
-    wait_ms(300);
+    platform_keypad_use_lut(SCANCODE_CHAR_LUT);
 
-    while(!exit_condition_motor) {
+    while(!exit_condition) {
+        key_pressed = platform_keypad_poll_key_rl(&pressed_key, 500);
 
-        platform_keypad_poll_key(&pressed_key);
-
-        if(pressed_key == 3) {
-
-            while(!draw_circle());
-
-        } else if (pressed_key == 2) {
-
-            while(!draw_square());
-
-        } else if (pressed_key == 1) {
-
-            while(!test_vertical_axis());
-
-        } else if (pressed_key == 12) {
-
-            exit_condition_motor = true;
-
+        if (key_pressed) {
+            switch (pressed_key) {
+            case 'A':
+                motor_patterns_circle();
+                break;
+            case 'B':
+                motor_patterns_square();
+                break;
+            case 'C':
+                motor_patterns_zdemo();
+                break;
+            case '*':
+                exit_condition = true;
+                break;
+            }
         }
-
-        pressed_key = 30;
-
     }
-
 }
 
 
-void text_select_test(void) {
-
+static void text_select_test(void) {
     platform_lcd_clear_display();
-    strcpy(data_to_screen, "A->crcl / B->sqr");
-    platform_lcd_write_ascii(data_to_screen, 0);
 
-    strcpy(data_to_screen, "C -> test Z axis");
-    platform_lcd_write_ascii(data_to_screen, 64);
-
-    pressed_key = 30;
-
+    platform_lcd_write_ascii("A->crcl / B->sqr", LCD_TOP_LINE);
+    platform_lcd_write_ascii("C -> test Z axis", LCD_BOTTOM_LINE);
 }

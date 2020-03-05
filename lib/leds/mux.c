@@ -3,6 +3,12 @@
 #include "leds.h"
 
 // Declarations
+struct LedSource {
+    uint8_t num;
+    uint32_t id;
+    struct LedSource *next;
+};
+
 struct LedMuxState {
     struct LedSource head;
     struct LedSource *current;
@@ -10,19 +16,19 @@ struct LedMuxState {
 
 
 // Definitions
-struct LedMuxState led_mux_state = {
+struct LedMuxState leds_mux_state = {
     .head = (struct LedSource){
         .num = 8,
         .id = 0,
         .next = NULL
     },
-    .current = NULL,
+    .current = &leds_mux_state.head,
 };
 
 
 // Public functions
-struct LedSource* led_mux_register_source(uint32_t id) {
-    struct LedSource *current = &led_mux_state.head;
+uint8_t* leds_mux_register_source(uint32_t id) {
+    struct LedSource *current = &leds_mux_state.head;
     while (current->id != id && current->next) {
         current = current->next;
     }
@@ -36,24 +42,24 @@ struct LedSource* led_mux_register_source(uint32_t id) {
         current = current->next;
     }
 
-    return current;
+    return &current->num;
 }
 
-void led_mux_set_curr(uint32_t id) {
-    struct LedSource *current = &led_mux_state.head;
+void leds_mux_set_curr(uint32_t id) {
+    struct LedSource *current = &leds_mux_state.head;
     while (current->id != id && current->next) {
         current = current->next;
     }
     if (current->id == id) {
-        led_mux_state.current = current;
+        leds_mux_state.current = current;
     } else {
-        led_mux_state.current = &led_mux_state.head;
+        leds_mux_state.current = &leds_mux_state.head;
     }
 }
 
-void led_mux_tick(void) {
-    if (led_mux_state.current) {
-        led_clear();
-        led_disp_num(led_mux_state.current->num);
+void leds_mux_tick(void) {
+    if (leds_mux_state.current) {
+        leds_clear();
+        leds_disp_num(leds_mux_state.current->num);
     }
 }

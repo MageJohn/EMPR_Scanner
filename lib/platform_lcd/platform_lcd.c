@@ -1,3 +1,5 @@
+#include <stdio.h>
+#include <stdarg.h>
 #include <string.h>
 
 #include "platform.h"
@@ -121,7 +123,7 @@ void platform_lcd_write_ascii(char *string, uint8_t ddram_addr) {
         ['9'] = 0xb9, [':'] = 0xba, [';'] = 0xbb, ['<'] = 0xbc, ['='] = 0xbd,
         ['>'] = 0xbe, ['?'] = 0xbf, ['@'] = 0x80, ['A'] = 0xc1, ['B'] = 0xc2,
         ['C'] = 0xc3, ['D'] = 0xc4, ['E'] = 0xc5, ['F'] = 0xc6, ['G'] = 0xc7,
-        ['H'] = 0xc8, ['Y'] = 0xc9, ['J'] = 0xca, ['K'] = 0xcb, ['L'] = 0xcc,
+        ['H'] = 0xc8, ['I'] = 0xc9, ['J'] = 0xca, ['K'] = 0xcb, ['L'] = 0xcc,
         ['M'] = 0xcd, ['N'] = 0xce, ['O'] = 0xcf, ['P'] = 0xd0, ['Q'] = 0xd1,
         ['R'] = 0xd2, ['S'] = 0xd3, ['T'] = 0xd4, ['U'] = 0xd5, ['V'] = 0xd6,
         ['W'] = 0xd7, ['X'] = 0xd8, ['Y'] = 0xd9, ['Z'] = 0xda, ['['] = 0x8a,
@@ -155,4 +157,18 @@ void platform_lcd_write_ascii(char *string, uint8_t ddram_addr) {
     packet.tx_data = data;
     packet.tx_length = n+1;
     platform_i2c_transfer_blocking(&packet);
+}
+
+uint32_t platform_lcd_printf(uint8_t ddram_addr, char const *format, ...) {
+    va_list args;
+    char buf[16];
+
+    va_start(args, format);
+    int length = vsnprintf(buf, 16, format, args);
+    va_end(args);
+
+    if (length > 0) {
+        platform_lcd_write_ascii(buf, ddram_addr);
+    }
+    return length;
 }

@@ -43,7 +43,7 @@ static uint8_t onehot4b_to_binary2b(uint8_t onehot4b);
 
 
 // File local variables
-static struct LedSource *led;
+static uint8_t *led;
 static uint8_t *lut;
 static bool pressed_keys[NKEYS] = {
     [0 ... NKEYS-1] = false
@@ -75,7 +75,7 @@ void platform_keypad_int_init(void) {
     };
     platform_i2c_transfer_blocking(&int_i2c_packet);
 
-    led = led_mux_register_source(KP_LED);
+    led = leds_mux_register_source(KP_LED);
 
     PINSEL_CFG_Type gpio_int = {
         .Funcnum = 0,
@@ -105,8 +105,7 @@ void EINT3_IRQHandler(void) {
     }
     uint8_t led_time = millis();
     if ((millis() - led_time) > 1000) {
-        //led->num = (led->num + 1) % 8;
-        led->num ^= 1;
+        *led ^= 1;
         led_time = millis();
     }
 

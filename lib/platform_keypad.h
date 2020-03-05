@@ -76,7 +76,7 @@ bool platform_keypad_poll_key(uint8_t *key);
        uint16_t rate: limiting value for how often the key repeats when held
        down
 */
-bool platform_keypad_poll_rl(uint8_t *key, uint16_t rate);
+bool platform_keypad_poll_key_rl(uint8_t *key, uint16_t rate);
 
 /*
   Initialise the interrupt handler for keypad.

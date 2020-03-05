@@ -1,7 +1,13 @@
+#include <stdarg.h>
+#include <stdio.h>
 #include "lpc17xx_uart.h"
 #include "lpc17xx_pinsel.h"
 
 #include "serial.h"
+
+// The serial can queue a max of 16 bytes before waiting for the queue to empty again.
+// The blocking functions below wait for the queue to empty and then continue, the non-blocking ones
+// send or recieve a maximum of 16 bytes
 
 uint32_t serial_read_nb(char *buf, uint32_t length) {
     return(UART_Receive((LPC_UART_TypeDef *)LPC_UART0, (uint8_t *)buf, length, NONE_BLOCKING));
@@ -11,10 +17,38 @@ uint32_t serial_read_b(char *buf, uint32_t length) {
   return(UART_Receive((LPC_UART_TypeDef *)LPC_UART0, (uint8_t *)buf, length, BLOCKING));
 }
 
+uint32_t serial_write_nb(char *buf, uint32_t length) {
+    return(UART_Send((LPC_UART_TypeDef *)LPC_UART0, (uint8_t *)buf, length, NONE_BLOCKING));
+}
+
 uint32_t serial_write_b(char *buf, uint32_t length) {
     return(UART_Send((LPC_UART_TypeDef *)LPC_UART0, (uint8_t *)buf, length, BLOCKING));
 }
 
+uint32_t serial_printf(char const *format, ...) {
+    va_list args;
+    char buf[SERIAL_MAX_STR_LEN];
+
+    va_start(args, format);
+    int length = vsnprintf(buf, SERIAL_MAX_STR_LEN, format, args);
+    va_end(args);
+
+    if (length > 0) {
+        return serial_write_b(buf, length);
+    } else {
+        return -1;
+    }
+}
+
+bool serial_nb_write_finished(void) {
+    FlagStatus status = UART_CheckBusy(LPC_UART0);
+    return (status == SET) ? false : true;
+}
+
+void serial_wait_for_byte(void) {
+    char byte;
+    serial_read_b(&byte, 1);
+}
 
 void serial_init(void) {
     UART_CFG_Type UARTConfigStruct;  // UART Configuration structure variable
