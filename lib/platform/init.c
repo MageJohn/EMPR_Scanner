@@ -1,4 +1,5 @@
 #include "lpc17xx_systick.h"
+#include "lpc17xx_clkpwr.h"
 
 #include "leds.h"
 #include "time.h"
@@ -20,6 +21,7 @@ void platform_init(void) {
     leds_mux_set_curr(HB_LED);
 
     SYSTICK_InternalInit(1);
+    SysTick->LOAD = (SystemCoreClock/10e6) * 700 - 1;
     SYSTICK_IntCmd(ENABLE);
     SYSTICK_Cmd(ENABLE);
 

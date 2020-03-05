@@ -9,7 +9,7 @@
 #define LIMITBUTTONS 0x3C
 
 // The time in milliseconds between steps
-#define DEFAULT_INTERVAL 2
+#define DEFAULT_INTERVAL 1400
 
 // Structs
 struct MotorState {
@@ -35,7 +35,7 @@ static struct MotorState x_state = {.soft_limit = X_SOFT_LIMIT};
 static struct MotorState y_state = {.soft_limit = Y_SOFT_LIMIT};
 static struct MotorState z_state = {.soft_limit = Z_SOFT_LIMIT};
 static uint32_t tick_start = 0;
-static uint16_t interval = DEFAULT_INTERVAL; 
+static uint16_t interval = DEFAULT_INTERVAL;
 static uint8_t *limit_switch_led;
 
 /* ---------------------
@@ -100,7 +100,7 @@ void motors_init(void) {
 
 
 void motors_tick(void) {
-    if (millis() - tick_start > interval) {
+    if (micros() - tick_start > interval) {
         update_limit_switches();
 
         update_motor(&x_state);
@@ -109,7 +109,7 @@ void motors_tick(void) {
 
         move_motors();
 
-        tick_start = millis();
+        tick_start = micros();
     }
 }
 
