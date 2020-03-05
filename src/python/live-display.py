@@ -27,7 +27,8 @@ class Scanner(Thread):
             output = open(args.raw_out, "wb")
             inp = Serial("/dev/ttyACM0", 9600, timeout=0.5)
             inp.write(1)
-        if args.invert_gamma: dp = DataProcessing(inp, args.gamma, args.integ_cycles, output, args.track)
+        if args.invert_gamma: 
+            dp = DataProcessing(inp, args.gamma, args.integ_cycles, output, args.track)
             args.gamma = 1 / args.gamma
         self.dp = DataProcessing(inp, args.gamma, args.integ_cycles, output, args.track)
         self.size = self.dp.get_size()
