@@ -4,9 +4,9 @@
 
 void main(void) {
     struct ScanningConfig cfg = {
-        .z = 100,
-        .start = {50, 360},
-        .size = {750, 500},
+        .z = 40,
+        .start = {200, 400},
+        .size = {450, 400},
         .res = {75, 50},
         .cal_freqs = {1, 1},
         .wait_for_sensor = false,
