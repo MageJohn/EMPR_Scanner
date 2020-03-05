@@ -1,13 +1,15 @@
-import io
-import os
 import ctypes
-from serial import Serial
+import io
+from struct import pack
 from threading import Thread
+
+import PIL
 import sdl2
 import sdl2.ext
-from processing import DataProcessing, parser as dp_parser
-from struct import pack
+from serial import Serial
 
+from processing import DataProcessing
+from processing import parser as dp_parser
 
 SCANNER_NEW_PIXEL = 1
 
@@ -57,6 +59,17 @@ class Scanner(Thread):
         self.dp.ser.close()
 
 
+def contrast_enhance(im, contrast=2.2):
+    enh = PIL.ImageEnhance.Contrast(im)
+    return enh.enhance(2.2)
+
+
+def surface_to_pil(surf):
+    bmp = io.BytesIO()
+    sdl2.SDL_SaveBMP_RW(surf, sdl2.rw_from_object(bmp), False)
+    return PIL.Image.open(bmp)
+
+
 def run(args):
     sdl2.ext.init()
     window = sdl2.ext.Window(
@@ -99,6 +112,10 @@ def run(args):
                     if tex is not None:
                         renderer.copy(tex)
                     renderer.present()
+            if event.type == sdl2.SDL_KEYDOWN:
+                if event.key.keysym.sym == sdl2.SDLK_s:
+                    im = contrast_enhance(surface_to_pil(scanner.sprite.surface), args.contrast)
+                    im.save(args.image_out)
             window.refresh()
     scanner.join()
 
