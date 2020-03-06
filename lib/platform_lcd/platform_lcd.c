@@ -6,10 +6,11 @@
 #include "platform/platform_i2c.h"
 #include "platform_lcd.h"
 
-
 #define LEN(x)  (sizeof(x) / sizeof((x)[0]))
 #define LCD_ADDR 0x3b
 #define DDRAM_SIZE 80
+
+static uint8_t min(uint8_t, uint8_t);
 
 
 void platform_lcd_init(void) {
@@ -85,6 +86,8 @@ void platform_lcd_send_bytes(uint8_t *data, uint32_t length) {
 
 
 void platform_lcd_write_bytes(uint8_t *bytes, uint8_t length, uint8_t ddram_addr) {
+    length = min(DDRAM_SIZE, length);
+
     I2C_M_SETUP_Type packet = {
         .sl_addr7bit = LCD_ADDR,
         .rx_data = NULL
@@ -94,11 +97,11 @@ void platform_lcd_write_bytes(uint8_t *bytes, uint8_t length, uint8_t ddram_addr
         Control_byte(0,0),
         Set_DDRAM(ddram_addr)
     };
-    uint8_t data[DDRAM_SIZE+1] = {
-        Control_byte(0,1)
-    };
+    uint8_t data[length + 1];
 
-    memcpy((void*)data+1, (void*)bytes, (DDRAM_SIZE < length)?DDRAM_SIZE:length);
+    data[0] = Control_byte(0,1);
+
+    memcpy(((void *)data) + 1, bytes, length);
     // Note that the DDRAM address wraps to the beginning of the line if it
     // increments past the end
 
@@ -107,7 +110,7 @@ void platform_lcd_write_bytes(uint8_t *bytes, uint8_t length, uint8_t ddram_addr
     platform_i2c_transfer_blocking(&packet);
 
     packet.tx_data = data;
-    packet.tx_length = DDRAM_SIZE+1;
+    packet.tx_length = length + 1;
     platform_i2c_transfer_blocking(&packet);
 }
 
@@ -171,4 +174,9 @@ uint32_t platform_lcd_printf(uint8_t ddram_addr, char const *format, ...) {
         platform_lcd_write_ascii(buf, ddram_addr);
     }
     return length;
+}
+
+
+static uint8_t min(uint8_t a, uint8_t b) {
+    return (a < b) ? a : b;
 }
