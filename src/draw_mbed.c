@@ -20,10 +20,10 @@ void main(void) {
     serial_init();
 
     struct ScanningConfig cfg = {
-        .z = 40,
-        .start = {200, 350},
-        .size = {650, 500},
-        .res = {50, 50},
+        .z = 200,
+        .start = {250, 350},
+        .size = {600, 500},
+        .res = {100, 100},
         .cal_freqs = {0, 1},
         .wait_for_sensor = false,
         .send_data = true,
