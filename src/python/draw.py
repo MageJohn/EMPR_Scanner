@@ -143,7 +143,7 @@ def contrast_image(image_array):
     return x
 
 if __name__ == "__main__":
-    """
+    
     args = dp_parser.parse_args()
     ser = Serial("/dev/ttyACM0", 9600)
     dp = DataProcessing(ser)
@@ -155,13 +155,13 @@ if __name__ == "__main__":
     
     im = dp.makeim(im, args.contrast, flip_odd=False)
     im.save("test.png")
-    """
+    
     img = Image.open("test.png")
     im = np.array(img, dtype="uint8") 
 
 
     auto_canny(im, sigma = 0.33)
-    """
+    
     img = Image.open("refactored.png")
     x = np.array(img, dtype="uint8")
     seq = generate_control_sequence(x)
@@ -169,4 +169,4 @@ if __name__ == "__main__":
     inp = input("Press any key when pencil is in place: ")
     ser.write(1)
     send_control_sequence(new_seq, ser)
-    """
+    
