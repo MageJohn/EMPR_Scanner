@@ -7,5 +7,5 @@ struct UI_elem {
     struct UI_elem *prev;
 };
 
-void UI_build_sequence(struct UI_elem *last, struct UI_elem *this);
+void UI_build_option_menu(struct UI_elem *last, struct UI_elem *this);
 void UI_run(struct UI_elem *first);

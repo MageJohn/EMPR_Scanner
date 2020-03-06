@@ -36,9 +36,9 @@ void main(void) {
     leds = leds_mux_register_source(1);
     leds_mux_set_curr(1);
 
-    UI_build_sequence(NULL, &incr_elem);
-    UI_build_sequence(&incr_elem, &decr_elem);
-    UI_build_sequence(&decr_elem, &zero_elem);
+    UI_build_option_menu(NULL, &incr_elem);
+    UI_build_option_menu(&incr_elem, &decr_elem);
+    UI_build_option_menu(&decr_elem, &zero_elem);
 
     UI_run(&incr_elem);
 }
