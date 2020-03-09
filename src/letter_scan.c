@@ -20,8 +20,8 @@ void main(void) {
     struct ScanningConfig cfg = {
         .z = 40,
         .start = {120, 220},
-        .size = {800, 860},
-        .res = {80, 86},
+        .size = {780, 860},
+        .res = {78, 86},
         .cal_freqs = {1, 1},
         .wait_for_sensor = false,
         .send_data = true,
