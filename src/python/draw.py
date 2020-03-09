@@ -60,7 +60,7 @@ def next_pixel(pixel, image_array):
 
 class Move:
     def __init__(self):
-        self.z = 400
+        self.z = 200
         self.pixel = (0, 0)
 
     def move(self, pixel):
@@ -72,7 +72,7 @@ class Move:
         return self._create_cmd()
 
     def down(self):
-        self.z = 400
+        self.z = 200
         return self._create_cmd()
 
     def _create_cmd(self):
@@ -143,7 +143,7 @@ def contrast_image(image_array):
     return x
 
 if __name__ == "__main__":
-    
+
     args = dp_parser.parse_args()
     ser = Serial("/dev/ttyACM0", 9600)
     dp = DataProcessing(ser)
@@ -156,7 +156,7 @@ if __name__ == "__main__":
     im = dp.makeim(im, args.contrast, flip_odd=False)
     im.save("test.png")
     
-    img = Image.open("test.png")
+    img = Image.open("emoticon.png")
     im = np.array(img, dtype="uint8") 
 
 

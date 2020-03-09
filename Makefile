@@ -83,6 +83,10 @@ C1_deps := $(platform_deps) platform_lcd.a serial.o
 flag_detect_deps := $(platform_deps) serial.o
 scanning_test_deps := $(platform_deps) serial.o scanning.o platform_lcd.a
 printf_test_deps := $(platform_deps) platform_lcd.a
+D2_deps := $(platform_deps) serial.o scanning.o platform_lcd.a
+D3_deps := $(platform_deps) serial.o scanning.o platform_lcd.a
+B3_deps := $(platform_deps) serial.o scanning.o platform_lcd.a
+
 
 STATIC_LIBS := 
 

@@ -21,6 +21,8 @@ struct ScanningConfig {
     bool show_lcd;
     // Highest clear value seen so far
     uint16_t highest_vals[4];
+    // x, y and z coords of the highest CRGB vals. Row 0 is C, 1 is R etc.
+    int16_t location_highest[4][3];
 };
 
 void scanning_setup(struct ScanningConfig *new_cfg);
