@@ -71,6 +71,7 @@ void manual_ui(enum ManualUIDataDisplay mode) {
                 // Switch between showing axis position and rgb values
                 mode = !mode;
                 platform_lcd_clear_display();
+                wait_ms(50);
                 break;
             }
         }

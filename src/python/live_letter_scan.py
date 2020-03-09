@@ -8,8 +8,8 @@ import sdl2
 import sdl2.ext
 from serial import Serial
 
-from processing import DataProcessing
-from processing import parser as dp_parser
+from letter_processing import DataProcessing
+from letter_processing import parser as dp_parser
 
 SCANNER_NEW_PIXEL = 1
 

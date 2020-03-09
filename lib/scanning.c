@@ -6,6 +6,7 @@
 #include "scanning.h"
 
 // File private functions
+static void set_highest_crgb(union ColourData cdata);
 static void write_to_lcd(union ColourData *cdata);
 static void calibrate(void);
 
@@ -42,7 +43,6 @@ void scanning_setup(struct ScanningConfig *new_cfg) {
     state.stop[Y] = (cfg.start[Y] + cfg.res[Y] * state.step[Y]);
 }
 
-
 void scanning_scan_axis(int16_t *coords, uint8_t axis) {
     union ColourData cdata;
     int16_t pos[3] = {coords[X], coords[Y], cfg.z};
@@ -52,6 +52,7 @@ void scanning_scan_axis(int16_t *coords, uint8_t axis) {
             platform_sensor_wait_for_integration();
         }
         platform_sensor_get_data(cdata.combined);
+        set_highest_crgb(cdata);
         if (cfg.send_data) {
             while(!serial_nb_write_finished());
             serial_write_nb((char *)&cdata, sizeof(cdata));
@@ -110,3 +111,13 @@ static void calibrate(void) {
     }
     platform_head_set_coords_and_wait(coords[X], coords[Y], coords[Z]);
 }
+
+static void set_highest_crgb(union ColourData cdata) {    
+    int i;
+    for(i = 0; i < 4; i++) {
+        if (cdata.combined[i] > cfg.highest_vals[i]) {
+            cfg.highest_vals[i] = cdata.combined[i];
+        }
+    }
+}
+

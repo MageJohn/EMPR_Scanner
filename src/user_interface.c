@@ -57,6 +57,8 @@ void option_menu(void) {
                 manual_ui(UI_SHOW_COORDS);
                 break;
             }
+            platform_lcd_clear_display();
+            text_option_menu();
         }
     }
 }
@@ -65,10 +67,4 @@ void text_option_menu(void) {
     platform_lcd_write_ascii("A> patt", LCD_TOP_LINE);
     platform_lcd_write_ascii("B> edge", LCD_TOP_LINE + 8);
     platform_lcd_write_ascii("C> move/scan", LCD_BOTTOM_LINE);
-
-    // put arrow chars on the display
-    /* uint8_t rarrow = 0x20; */
-    /* platform_lcd_write_bytes(&rarrow, 1, LCD_TOP_LINE + 1); */
-    /* platform_lcd_write_bytes(&rarrow, 1, LCD_TOP_LINE + 8 + 1); */
-    /* platform_lcd_write_bytes(&rarrow, 1, LCD_BOTTOM_LINE + 1); */
 }

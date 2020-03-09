@@ -30,5 +30,5 @@ def auto_canny(image, sigma = 0.33):
     s.save("refactored.png")
 
 if __name__ == "__main__":
-    im = cv2.imread("face.png")
+    im = cv2.imread("emoticon.png")
     auto_canny(im)
