@@ -19,6 +19,8 @@ struct ScanningConfig {
     bool send_data;
     // Whether to write RGB data to the LCD
     bool show_lcd;
+    // Highest clear value seen so far
+    uint16_t highest_vals[4];
 };
 
 void scanning_setup(struct ScanningConfig *new_cfg);

@@ -34,6 +34,7 @@ class Scanner(Thread):
         self.size = self.dp.get_size()
 
         self.sprite = factory.create_sprite(size=self.size)
+        self.completed_part = self.sprite.subsprite((0, 0, self.sprite.size[0], 0))
 
     def run(self):
         self.running = True
@@ -43,12 +44,13 @@ class Scanner(Thread):
                 try:
                     pix = self.dp.read_pixel()
                     array.flat[i] = int.from_bytes(
-                        pack("3B", *self.dp.raw_to_rgb(pix, self.args.max_type)), "big"
+                        pack("3B", *self.dp.raw_to_rgb(pix, 'absolute')), "big"
                     )
                     sdl2.SDL_PushEvent(ctypes.byref(self.event))
                 except io.BlockingIOError:
                     continue
                 break
+            self.completed_part = self.sprite.subsprite((0, 0, int(i / self.sprite.size[0]), self.sprite.size[1]))
             if self.running is False:
                 break
 
@@ -115,7 +117,7 @@ def run(args):
                     renderer.present()
             if event.type == sdl2.SDL_KEYDOWN:
                 if event.key.keysym.sym == sdl2.SDLK_s:
-                    im = contrast_enhance(surface_to_pil(scanner.sprite.surface), args.contrast)
+                    im = contrast_enhance(surface_to_pil(scanner.completed_part.surface), args.contrast)
                     im.save(args.image_out)
             window.refresh()
     scanner.join()
