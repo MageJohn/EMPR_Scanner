@@ -83,7 +83,7 @@ parser.add_argument("--from-file", '-f', type=argparse.FileType('rb'),
 parser.add_argument('--raw-out', '-r', default=f'data/ self.size = unpack("<2H", size){_timestamp}.raw',
                     help="The file to write the raw bytes to as they're read.\
                     This file is not used if --from-file is specified.")
-parser.add_argument('--image-out', default=os.path.expanduser(f'~/Pictures/scanned_letter.png'),
+parser.add_argument('--image-out', default=os.path.expanduser(f'~/Pictures/Flag{_timestamp}.png'),
                     help="The location of the image file to produce.")
 parser.add_argument("--max-type", '-m', choices=['absolute', 'image', 'dynamic'], default='image',
                     help="""How the maximum value for a pixel is determined. If a pixel is at this max, it's value will be 255.
