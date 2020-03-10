@@ -22,7 +22,7 @@ void main(void) {
         .start = {120, 220},
         .size = {780, 860},
         .res = {78, 86},
-        .cal_freqs = {1, 1},
+        .cal_freqs = {0, 1},
         .wait_for_sensor = false,
         .send_data = true,
         .show_lcd = false,
