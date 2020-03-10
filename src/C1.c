@@ -8,7 +8,7 @@ uint16_t colour[4];
 #define TOLERANCE 0.15
 #define X_CENTRE 450
 #define Y_CENTRE 625
-#define Z 300
+#define Z 200
 #define X_STEP 300
 #define Y_STEP 175
 
