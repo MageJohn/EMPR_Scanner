@@ -20,7 +20,7 @@ void main(void) {
     serial_init();
 
     struct ScanningConfig cfg = {
-        .z = 100,
+        .z = 300,
         .start = {250, 350},
         .size = {600, 500},
         .res = {10, 10},

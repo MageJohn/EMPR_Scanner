@@ -17,16 +17,20 @@ def read_size(ser):
 
 if __name__ == "__main__":
     ser = serial.Serial("/dev/ttyACM0", 9600)
-    size = read_size(ser)
     x = 0
     y = 0
     colour = (0,0,0)
+    ser.write(1)
+    size = read_size(ser)
+    print(size)
     while True:
         for i in range(size[1]):
-            colour = read_crgb
+            colour = read_crgb(ser)
             colour = crgb_2_rgb(colour)
             y += 1
+            print("Pixel: "+str((x,y))+". RGB: "+str(colour), end="\r")
         x += 1
+        y = 0
 
 
         
