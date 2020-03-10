@@ -3,3 +3,4 @@ include/
 .clang_complete
 .dir-locals.el
 __pycache__
+.vscode
