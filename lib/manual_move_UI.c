@@ -113,7 +113,7 @@ static void display_rgb_values(void) {
     platform_sensor_get_data(crgb.combined);
 
     // Convert from 16-bit raw data to 8-bit RGB representation
-    rgb_display[0] = ((float)crgb.combined[0] / 1024.0) * 255;
+    rgb_display[0] = ((float)crgb.combined[1] / 1024.0) * 255;
     rgb_display[1] = ((float)crgb.combined[2] / 1024.0) * 255;
     rgb_display[2] = ((float)crgb.combined[3] / 1024.0) * 255;
 
