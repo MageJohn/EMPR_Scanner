@@ -13,13 +13,13 @@ void main(void) {
     platform_lcd_clear_display();
 
     struct ScanningConfig cfg = {
-        .z = 100,
-        .start = {300, 400},
-        .size = {300, 400},
-        .res = {10, 10},
-        .cal_freqs = {0, 1},
+        .z = 200,
+        .start = {100, 600},
+        .size = {600, 1},
+        .res = {120, 1},
+        .cal_freqs = {0, 0},
         .wait_for_sensor = false,
-        .send_data = true,
+        .send_data = false,
         .show_lcd = false,
         .highest_vals = {0, 0, 0, 0},
         .location_highest = {{0, 0, 0},{0, 0, 0},{0, 0, 0},{0, 0, 0}}
@@ -29,17 +29,15 @@ void main(void) {
     while(!platform_calibrated());
 
     scanning_setup(&cfg);
-    leds_mux_set_curr(10);
 
     scanning_raster(X, Y);
 
-    platform_lcd_printf(LCD_TOP_LINE, "%x", cfg.highest_vals[0]);
 
     int i;
-    for(i = 0; i < 4; i++) {
+    for(i = 1; i < 4; i++) {
         platform_head_set_coords(cfg.location_highest[i][0], cfg.location_highest[i][1], cfg.location_highest[i][2]);
+        platform_lcd_printf(LCD_TOP_LINE, "%x", cfg.highest_vals[i]);
         while(!platform_head_at_coords());
-        //platform_lcd_write_ascii("Highest colour location", LCD_TOP_LINE);
         wait(5);
     }
 

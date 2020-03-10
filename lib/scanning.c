@@ -19,8 +19,6 @@ static struct ScanningState {
     int16_t stop[2];
 } state;
 
-static uint8_t *led;
-
 
 /* ---------------------
  * Public functons
@@ -28,7 +26,6 @@ static uint8_t *led;
 
 // Expects serial_init to have been called if cfg->send_data is set.
 void scanning_setup(struct ScanningConfig *new_cfg) {
-    led = leds_mux_register_source(10);
     cfg = new_cfg;
 
     if (cfg->show_lcd) {
@@ -118,8 +115,11 @@ static void calibrate(void) {
 
 static void set_highest_crgb(union ColourData *cdata, int16_t x, int16_t y, int16_t z) {    
     int i;
-    for(i = 0; i < 4; i++) {
-        if (cdata->combined[i] > cfg->highest_vals[i]) {
+    for(i = 1; i < 4; i++) {
+        if (cdata->combined[i] >= cfg->highest_vals[i]
+            && cdata->combined[(i % 3) + 1] < cdata->combined[i] * 0.8
+            && cdata->combined[((i + 1) % 3) + 1] < cdata->combined[i] * 0.8
+            ) {
             cfg->highest_vals[i] = cdata->combined[i];
             cfg->location_highest[i][0] = x;
             cfg->location_highest[i][1] = y;
