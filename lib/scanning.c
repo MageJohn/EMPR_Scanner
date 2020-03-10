@@ -115,6 +115,12 @@ static void calibrate(void) {
 
 static void set_highest_crgb(union ColourData *cdata, int16_t x, int16_t y, int16_t z) {    
     int i;
+    if (cdata->combined[0] >= cfg->highest_vals[0]) {
+        cfg->highest_vals[0] = cdata->combined[0];
+        cfg->location_highest[0][0] = x;
+        cfg->location_highest[0][1] = y;
+        cfg->location_highest[0][2] = z;
+    }
     for(i = 1; i < 4; i++) {
         if (cdata->combined[i] >= cfg->highest_vals[i]
             && cdata->combined[(i % 3) + 1] < cdata->combined[i] * 0.8

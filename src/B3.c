@@ -1,10 +1,38 @@
 #include "scanning.h"
 #include "platform.h"
-#include "time.h"
-#include <stdlib.h>
-#include "serial.h"
-#include "leds.h"
-#include "platform_lcd.h"
+#include "UI.h"
+
+struct ScanningConfig cfg;
+
+struct UI_elem clear_elem;
+struct UI_elem red_elem;
+struct UI_elem green_elem;
+struct UI_elem blue_elem;
+
+static void goto_clear(void);
+static void goto_red(void);
+static void goto_green(void);
+static void goto_blue(void);
+
+struct UI_elem clear_elem = {
+    .text = "goto clear",
+    .callback = &goto_clear,
+};
+
+struct UI_elem red_elem = {
+    .text = "goto red",
+    .callback = &goto_red,
+};
+
+struct UI_elem green_elem = {
+    .text = "goto green",
+    .callback = &goto_green,
+};
+
+struct UI_elem blue_elem = {
+    .text = "goto blue",
+    .callback = &goto_blue,
+};
 
 void main(void) {
     platform_init();
@@ -12,7 +40,7 @@ void main(void) {
     platform_lcd_init();
     platform_lcd_clear_display();
 
-    struct ScanningConfig cfg = {
+    cfg = (struct ScanningConfig){
         .z = 200,
         .start = {100, 600},
         .size = {600, 1},
@@ -32,14 +60,29 @@ void main(void) {
 
     scanning_raster(X, Y);
 
+    UI_build_option_menu(NULL, &clear_elem);
+    UI_build_option_menu(&clear_elem, &red_elem);
+    UI_build_option_menu(&red_elem, &green_elem);
+    UI_build_option_menu(&green_elem, &blue_elem);
 
-    int i;
-    for(i = 1; i < 4; i++) {
-        platform_head_set_coords(cfg.location_highest[i][0], cfg.location_highest[i][1], cfg.location_highest[i][2]);
-        platform_lcd_printf(LCD_TOP_LINE, "%x", cfg.highest_vals[i]);
-        while(!platform_head_at_coords());
-        wait(5);
-    }
-
+    UI_run(&clear_elem);
 }
 
+static void goto_clear(void) {
+    int16_t *pos = cfg.location_highest[0];
+    platform_head_set_coords(pos[0], pos[1], pos[2]);}
+
+void goto_red(void) {
+    int16_t *pos = cfg.location_highest[1];
+    platform_head_set_coords(pos[0], pos[1], pos[2]);
+}
+
+void goto_green(void) {
+    int16_t *pos = cfg.location_highest[2];
+    platform_head_set_coords(pos[0], pos[1], pos[2]);
+}
+
+void goto_blue(void) {
+    int16_t *pos = cfg.location_highest[3];
+    platform_head_set_coords(pos[0], pos[1], pos[2]);
+}
