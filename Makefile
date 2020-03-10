@@ -72,7 +72,7 @@ C1_deps := $(platform_deps) platform_lcd.a serial.o
 flag_detect_deps := $(platform_deps) serial.o
 scanning_test_deps := $(platform_deps) serial.o scanning.o platform_lcd.a
 D2_deps := $(platform_deps) serial.o scanning.o platform_lcd.a
-D3_deps := $(platform_deps) serial.o scanning.o platform_lcd.a
+B2-D1-D3_deps := $(platform_deps) serial.o scanning.o platform_lcd.a UI.o platform_lcd.a platform_keypad.a
 B3_deps := $(platform_deps) serial.o scanning.o platform_lcd.a UI.o platform_lcd.a platform_keypad.a
 
 
