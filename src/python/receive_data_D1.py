@@ -1,18 +1,34 @@
 import serial
 from struct import unpack
 
-with serial.Serial('/dev/ttyACM0', 9600) as ser:
-    #ser.write('1')
-    while True:
-        x_y_z = ser.read(6)
-        r_g_b = ser.read(8)
-        x_y_z_vals = unpack("<3H", x_y_z)
-        r_g_b_vals = unpack("<4H", r_g_b)
+def read_crgb(ser):
+    crgb = ser.read(8)
+    colours = unpack("<4H", crgb)
+    return colours
 
-        r_g_b_final = [int((float(chan) / 700) * 255) for chan in r_g_b_vals]
-        
-        print("Coord=" + str(x_y_z_vals))
-        print("RGB=" + str(r_g_b_final))
+def crgb_2_rgb(raw):
+    GAMMA = 2.2
+    return tuple((int(((val/raw[0]) ** GAMMA) * 255) for val in raw[1:]))
+
+def read_size(ser):
+    size = ser.read(4)
+    size = unpack("<2H", size)
+    return size
+
+if __name__ == "__main__":
+    ser = serial.Serial("/dev/ttyACM0", 9600)
+    size = read_size(ser)
+    x = 0
+    y = 0
+    colour = (0,0,0)
+    while True:
+        for i in range(size[1]):
+            colour = read_crgb
+            colour = crgb_2_rgb(colour)
+            y += 1
+        x += 1
+
+
         
         
 
