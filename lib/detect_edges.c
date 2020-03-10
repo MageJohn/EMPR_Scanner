@@ -7,6 +7,7 @@
 #include "platform_lcd.h"
 #include "serial.h"
 #include "platform.h"
+#include "time.h"
 
 #define THRESHOLD 10
 #define SEARCH_STEP 5
@@ -41,6 +42,9 @@ void detect_edges(void) {
 
     platform_lcd_printf(LCD_BOTTOM_LINE, "%.3u %.3u        ",
                         detected_edges[1][X], detected_edges[1][Y]);
+    
+    wait(5);
+
 }
 
 
