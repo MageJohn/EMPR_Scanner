@@ -63,27 +63,14 @@ vpath %.a $(BIN_DIR)
 vpath % $(BIN_DIR)
 
 platform_deps := platform.a time.o leds.a
-stepper_test_deps := time.o ioboard.a leds.o
-motors_test_deps := $(platform_deps)
-stop_motors_deps := ioboard.a
-struct_test_deps := serial.o
-led_mux_test_deps := leds.a time.o
-rgb_sensor_test_deps := ioboard.a time.o serial.o
-raster_scan_B2_deps := $(platform_deps) serial.o
-lib_sensor_test_deps := $(platform_deps) serial.o
-UI_test_deps := $(platform_deps) UI.o platform_lcd.a platform_keypad.a
-lcd_test_deps := $(platform_deps) platform_lcd.a serial.o
-keypad_test_deps := $(platform_deps) platform_keypad.a
-user_interface_deps := $(platform_deps) UI.o platform_lcd.a platform_keypad.a manual_move_UI.o motor_patterns_UI.o motor_patterns.o detect_edges.o
-draw_mbed_deps := $(platform_deps) serial.o scanning.o platform_lcd.a
-receive_data_deps := $(platform_deps) serial.o
-letter_scan_deps := $(platform_deps) serial.o scanning.o platform_lcd.a
+A1-B1_deps := $(platform_deps) UI.o platform_lcd.a platform_keypad.a manual_move_UI.o motor_patterns_UI.o motor_patterns.o detect_edges.o
+photocopy_micah_deps := $(platform_deps) serial.o scanning.o platform_lcd.a
+OCR_scan_deps := $(platform_deps) serial.o scanning.o platform_lcd.a
 transmit_data_D1_deps := $(platform_deps) serial.o
 send_test_D1_deps := $(platform_deps) serial.o transmit_data_D1.o
 C1_deps := $(platform_deps) platform_lcd.a serial.o
 flag_detect_deps := $(platform_deps) serial.o
 scanning_test_deps := $(platform_deps) serial.o scanning.o platform_lcd.a
-printf_test_deps := $(platform_deps) platform_lcd.a
 D2_deps := $(platform_deps) serial.o scanning.o platform_lcd.a
 D3_deps := $(platform_deps) serial.o scanning.o platform_lcd.a
 B3_deps := $(platform_deps) serial.o scanning.o platform_lcd.a UI.o platform_lcd.a platform_keypad.a
