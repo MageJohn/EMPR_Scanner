@@ -28,7 +28,7 @@ static void display_coordinates(void);
 static void display_rgb_values(void);
 
 
-void manual_ui(enum ManualUIDataDisplay mode) {
+void manual_ui(enum ManualUIDataDisplay mode, int16_t *out_coords) {
     bool exit_condition = false;
     uint8_t pressed_key;
     struct Pos coords;
@@ -74,15 +74,24 @@ void manual_ui(enum ManualUIDataDisplay mode) {
                 wait_ms(50);
                 break;
             }
+            wait_ms(100);
+        } else {
+            if (mode == UI_SHOW_RGB) {
+                display_rgb_values();
+            }
         }
 
         platform_head_set_coords(coords.x, coords.y, coords.z);
 
-        if (mode == UI_SHOW_RGB) {
-            display_rgb_values();
-        } else {
+        if (mode == UI_SHOW_COORDS) {
             display_coordinates();
         }
+    }
+
+    if (out_coords != NULL) {
+        out_coords[X] = coords.x;
+        out_coords[Y] = coords.y;
+        out_coords[Z] = coords.z;
     }
 }
 
@@ -104,7 +113,7 @@ static void display_rgb_values(void) {
     platform_sensor_get_data(crgb.combined);
 
     // Convert from 16-bit raw data to 8-bit RGB representation
-    rgb_display[0] = ((float)crgb.combined[0] / 1024.0) * 255;
+    rgb_display[0] = ((float)crgb.combined[1] / 1024.0) * 255;
     rgb_display[1] = ((float)crgb.combined[2] / 1024.0) * 255;
     rgb_display[2] = ((float)crgb.combined[3] / 1024.0) * 255;
 

@@ -6,22 +6,32 @@ and demonstrated.
 
 */
 
-#include "serial.h"
+#include "UI.h"
 #include "platform.h"
-#include "platform_keypad.h"
 #include "platform_lcd.h"
 #include "motor_patterns_UI.h"
 #include "manual_move_UI.h"
-#include "platform_edge_detection.h"
+#include "detect_edges.h"
 #include "time.h"
 
-uint8_t pressed_key;
+static void run_manual_ui(void);
 
-void option_menu(void);
-void text_option_menu(void);
+struct UI_elem patt_elem = {
+    .text = "patt test",
+    .callback = &select_test,
+};
+
+struct UI_elem edge_elem = {
+    .text = "edge detect",
+    .callback = &detect_edges,
+};
+
+struct UI_elem manual_elem = {
+    .text = "move/scan",
+    .callback = &run_manual_ui,
+};
 
 void main(void) {
-    serial_init();
     platform_init();
     platform_lcd_init();
     platform_lcd_clear_display();
@@ -29,42 +39,18 @@ void main(void) {
     platform_calibrate_head();
     while(!platform_calibrated());
 
+    detect_edges();
+
+    // Build main menu
+    UI_build_option_menu(NULL, &patt_elem);
+    UI_build_option_menu(&patt_elem, &edge_elem);
+    UI_build_option_menu(&edge_elem, &manual_elem);
+
     // Go into UI
-    option_menu();
+    UI_run(&patt_elem);
 }
 
-void option_menu(void) {
-    platform_keypad_use_lut(SCANCODE_CHAR_LUT);
-    text_option_menu();
-
-    while(true) {
-        bool key_pressed = platform_keypad_poll_key_rl(&pressed_key, 500);
-
-        if (key_pressed) {
-            switch (pressed_key) {
-            case 'A':
-                // Go to motor patterns UI
-                // Calibrate the head
-                select_test();
-                break;
-            case 'B':
-                // Start edge detection
-                detect_edges();
-                break;
-            case 'C':
-                // Go to manual move UI
-                // Calibrate the head
-                manual_ui(UI_SHOW_COORDS);
-                break;
-            }
-            platform_lcd_clear_display();
-            text_option_menu();
-        }
-    }
-}
-
-void text_option_menu(void) {
-    platform_lcd_write_ascii("A> patt", LCD_TOP_LINE);
-    platform_lcd_write_ascii("B> edge", LCD_TOP_LINE + 8);
-    platform_lcd_write_ascii("C> move/scan", LCD_BOTTOM_LINE);
+void run_manual_ui(void) {
+    manual_ui(UI_SHOW_COORDS, NULL);
+    wait_ms(50);
 }

@@ -23,7 +23,7 @@ void main(void) {
         .z = 100,
         .start = {250, 350},
         .size = {600, 500},
-        .res = {100, 100},
+        .res = {10, 10},
         .cal_freqs = {0, 1},
         .wait_for_sensor = false,
         .send_data = true,

@@ -14,9 +14,10 @@
 
 static void find_edge(int16_t *coords, uint8_t axis, int16_t step, int16_t stop);
 
-void detect_edges(void) {
-    int16_t corners[2][2] = {{0, 0}, {X_SOFT_LIMIT - 10, Y_SOFT_LIMIT - 10}};
+int16_t detected_edges[2][2] = {{0, 0}, {X_SOFT_LIMIT - 10, Y_SOFT_LIMIT - 10}};
 
+
+void detect_edges(void) {
     platform_calibrate_head();
 
     platform_lcd_clear_display();
@@ -24,22 +25,22 @@ void detect_edges(void) {
 
     while(!platform_calibrated());
 
-    find_edge(corners[0], X, SEARCH_STEP, X_SOFT_LIMIT / 10);
-    find_edge(corners[0], Y, SEARCH_STEP, Y_SOFT_LIMIT / 10);
+    find_edge(detected_edges[0], X, SEARCH_STEP, X_SOFT_LIMIT / 10);
+    find_edge(detected_edges[0], Y, SEARCH_STEP, Y_SOFT_LIMIT / 10);
 
     platform_calibrate_head();
 
     platform_lcd_printf(LCD_TOP_LINE, "%.3u %.3u           ",
-                        corners[0][X], corners[0][Y]);
+                        detected_edges[0][X], detected_edges[0][Y]);
     platform_lcd_write_ascii("Top corner", LCD_BOTTOM_LINE);
 
     while(!platform_calibrated());
 
-    find_edge(corners[1], X, SEARCH_STEP, X_SOFT_LIMIT);
-    find_edge(corners[1], Y, SEARCH_STEP, Y_SOFT_LIMIT);
+    find_edge(detected_edges[1], X, SEARCH_STEP, X_SOFT_LIMIT);
+    find_edge(detected_edges[1], Y, SEARCH_STEP, Y_SOFT_LIMIT);
 
     platform_lcd_printf(LCD_BOTTOM_LINE, "%.3u %.3u        ",
-                        corners[1][X], corners[1][Y]);
+                        detected_edges[1][X], detected_edges[1][Y]);
 }
 
 
